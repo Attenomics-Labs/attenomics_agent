@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 
-const exampleRoute = require('./exampleRoute');
+const creatorTokenRoute = require('./creatorTokenRoute');
 
-router.use('/example', exampleRoute);
+router.use('/creator', creatorTokenRoute);
 
 module.exports = router;

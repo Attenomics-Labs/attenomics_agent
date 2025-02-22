@@ -1,16 +1,18 @@
-// src/controllers/exampleController.js
-exports.getExample = (req, res, next) => {
+
+exports.getCreators = (req, res, next) => {
     try {
       // Business logic here...
+      console.log("GET example");
       res.json({ message: "GET example" });
     } catch (error) {
       next(error);
     }
   };
   
-  exports.createExample = (req, res, next) => {
+  exports.storeCreatorToken = (req, res, next) => {
     try {
       // Business logic here...
+      console.log("POST example");
       res.status(201).json({ message: "POST example" });
     } catch (error) {
       next(error);
