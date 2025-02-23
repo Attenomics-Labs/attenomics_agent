@@ -28,6 +28,6 @@ router.post('/tweets', getTweets);
  *   "user": "nasa"
  * }
  */
-router.post('/latest', getLatestTweet);
+router.post('/latest-tweet', getLatestTweet);
 
 module.exports = router;
