@@ -4,7 +4,6 @@ const router = express.Router();
 const creatorController = require('../controllers/creatorToken');
 
 router.get('/get-creator-data/', creatorController.getDataByUsername);
-
-router.post('/post-creator-token', creatorController.storeByUsername);
+router.post('/post-creator-token/', creatorController.storeByUsername);
 
 module.exports = router;

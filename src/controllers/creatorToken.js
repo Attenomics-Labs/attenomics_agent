@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { fetchMetadataFromIpfs } = require('../externalApi/IpfsApi');
 
 // Path to the JSON file where data will be stored
 const dataFilePath = path.join(__dirname, '..', 'data', 'creatorData.json');
@@ -25,7 +26,7 @@ const dataFilePath = path.join(__dirname, '..', 'data', 'creatorData.json');
  * }
  */
 
-exports.getDataByUsername = (req, res, next) => {
+exports.getDataByUsername = async(req, res, next) => {
   try {
     const { twitterUsername } = req.query; // <-- use req.query here
 
@@ -40,11 +41,29 @@ exports.getDataByUsername = (req, res, next) => {
       return res.status(404).json({ message: `No data found for user ${twitterUsername}` });
     }
 
-    return res.status(200).json(existingData[twitterUsername]);
+    // Extract the NFT IPFS CID from the stored data
+    const creatorData = existingData[twitterUsername];
+    const { nftIpfsCid } = creatorData;
+
+    if (!nftIpfsCid) {
+      return res.status(400).json({ message: `No nftIpfsCid found for user ${twitterUsername}` });
+    }
+
+    // Fetch the NFT metadata from IPFS
+    const nftMetadata = await fetchMetadataFromIpfs(nftIpfsCid);
+
+    // You can choose to return both the stored data and the fetched metadata
+    return res.status(200).json({
+      storedData: creatorData,
+      nftMetadata
+    });
   } catch (error) {
     next(error);
   }
 };
+
+
+
 
 exports.storeByUsername = (req, res, next) => {
   try {
