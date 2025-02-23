@@ -1,0 +1,16 @@
+{
+  "johndoe123": {
+    "creatorTokenAddress": "0x1234abcd5678ef90abcd1234ef5678901234abcd",
+    "distributorContractAddress": "0xabcd1234ef5678901234abcd5678ef90abcd1234",
+    "bondingCurveAddress": "0x5678ef901234abcd1234ef901234abcd5678ef90",
+    "selfTokenVaultAddress": "0xef901234abcd5678ef901234abcd5678ef901234",
+    "socialDataUser": {
+      "telegramGroup": "https://t.me/johndoeGroup",
+      "otherSocialProfiles": "https://www.linkedin.com/in/johndoe/"
+    },
+    "creatorWalletAddress": "0x9abcd1234ef5678901234abcd5678ef90abcd567",
+    "nftIpfsCid": "QmSampleNFTCID1234567890abcdef",
+    "entryPointAddress": "0xabcdef1234ef5678901234abcd5678ef90abcd12",
+    "attention": []
+  }
+}

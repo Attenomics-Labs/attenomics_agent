@@ -27,7 +27,7 @@ const dataFilePath = path.join(__dirname, '..', 'data', 'creatorData.json');
 
 exports.getDataByUsername = (req, res, next) => {
   try {
-    const { twitterUsername } = req.params;
+    const { twitterUsername } = req.query; // <-- use req.query here
 
     if (!fs.existsSync(dataFilePath)) {
       return res.status(404).json({ message: 'No data found' });
@@ -48,10 +48,9 @@ exports.getDataByUsername = (req, res, next) => {
 
 exports.storeByUsername = (req, res, next) => {
   try {
-    
+
     const {
       twitterUsername,
-      creatorXProfile,
       creatorTokenAddress,
       distributorContractAddress,
       bondingCurveAddress,
@@ -59,7 +58,8 @@ exports.storeByUsername = (req, res, next) => {
       socialDataUser,
       creatorWalletAddress,
       nftIpfsCid,
-      entryPointAddress
+      entryPointAddress,
+      attention
     } = req.body;
 
     if (!twitterUsername) {
@@ -75,7 +75,6 @@ exports.storeByUsername = (req, res, next) => {
 
     // Store data under the Twitter username
     existingData[twitterUsername] = {
-      creatorXProfile,
       creatorTokenAddress,
       distributorContractAddress,
       bondingCurveAddress,
@@ -84,7 +83,7 @@ exports.storeByUsername = (req, res, next) => {
       creatorWalletAddress,
       nftIpfsCid,
       entryPointAddress,
-      attention: [],
+      attention: attention || []
     };
 
     // Write updated data back to the file
