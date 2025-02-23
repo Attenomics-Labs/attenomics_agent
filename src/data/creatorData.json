@@ -12,5 +12,19 @@
     "nftIpfsCid": "QmW9sN7aS5t4bNJxVb3rDyvVRivu51DYHTeHbgsRQ3ksoW",
     "entryPointAddress": "0xabcdef1234ef5678901234abcd5678ef90abcd12",
     "attention": []
+  },
+  "vwakesahu": {
+    "creatorTokenAddress": "0x20A8a11Bb9C2AEF52fcbe798DF4A337353db8A89",
+    "distributorContractAddress": "0xD3ceAa3773208A6Fb92cf5db8318CE0e53285632",
+    "bondingCurveAddress": "0x0B72C7Ba8Ac6f52792C296C352715f3800fdF8cD",
+    "selfTokenVaultAddress": "0x90B894b953DD30F1A806D7597bB62B00FF4dba20",
+    "socialDataUser": {
+      "telegramGroup": "https://t.me/johndoeGroup",
+      "otherSocialProfiles": "https://www.linkedin.com/in/johndoe/"
+    },
+    "creatorWalletAddress": "0xc6377415Ee98A7b71161Ee963603eE52fF7750FC",
+    "nftIpfsCid": "QmYNAtwJuCPr5Tw3vzh9SANJsPrH7k33V44DfdFj8nidQo",
+    "entryPointAddress": "0x20A8a11Bb9C2AEF52fcbe798DF4A337353db8A89",
+    "attention": []
   }
 }
