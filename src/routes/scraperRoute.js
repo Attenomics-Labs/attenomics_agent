@@ -1,32 +1,33 @@
-// src/utils/scraper.js
-const { Scraper } = require('agent-twitter-client'); // Ensure the closing parenthesis is here
+// src/routes/scraperRoute.js
+
+const express = require('express');
+const router = express.Router();
+const { getTweets, getLatestTweet } = require('../controllers/scraperController.js');
 
 /**
- * Get or create a scraper instance.
- * - If cookies exist and are valid, use them.
- * - Otherwise, log in and cache new cookies.
+ * POST /scraper/tweets
+ * Body params:
+ *   user (string, required) - Twitter username
+ *   maxTweets (number, optional) - Maximum number of tweets to fetch
+ *
+ * Example body:
+ * {
+ *   "user": "elonmusk",
+ *   "maxTweets": 5
+ * }
  */
-async function getScraper() {
-  const scraper = new Scraper();
+router.post('/tweets', getTweets);
 
-  // Check if the scraper is logged in
-  const isLoggedIn = await scraper.isLoggedIn();
-  if (!isLoggedIn) {
-    console.log('Not logged in. Logging in with credentials...');
-    await scraper.login(
-      process.env.TWITTER_USERNAME || '',
-      process.env.TWITTER_PASSWORD || '',
-      process.env.TWITTER_EMAIL || '',
-      process.env.TWITTER_API_KEY || '',
-      process.env.TWITTER_API_SECRET_KEY || '',
-      process.env.TWITTER_ACCESS_TOKEN || '',
-      process.env.TWITTER_ACCESS_TOKEN_SECRET || ''
-    );
-  } else {
-    console.log('Scraper is already logged in.');
-  }
+/**
+ * POST /scraper/latest
+ * Body params:
+ *   user (string, required) - Twitter username
+ *
+ * Example body:
+ * {
+ *   "user": "nasa"
+ * }
+ */
+router.post('/latest', getLatestTweet);
 
-  return scraper;
-}
-
-module.exports = getScraper;
+module.exports = router;
