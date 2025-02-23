@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 const creatorController = require('../controllers/creatorToken');
 
-router.get('/get-creator-tokens', creatorController.getCreators);
-router.post('/post-creator-token', creatorController.storeCreatorToken);
+router.get('/get-creator-tokens/:twitterUsername', creatorController.getDataByUsername);
+
+router.post('/post-creator-token', creatorController.storeByUsername);
 
 module.exports = router;
