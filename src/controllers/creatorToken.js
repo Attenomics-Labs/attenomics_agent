@@ -4,7 +4,7 @@ const { fetchMetadataFromIpfs } = require("../externalApi/IpfsApi");
 
 // Path to the JSON file where data will be stored
 const dataFilePath = path.join(__dirname, "..", "data", "creatorData.json");
-const usernamesFilePath = path.join(__dirname, "..", "data", "usernames.json");
+const usernamesFilePath = path.join(__dirname, "..", "data", "creatorNames.json");
 
 /**
  * POST /api/data/store
@@ -148,17 +148,17 @@ exports.storeByUsername = async (req, res, next) => {
  * GET /api/creator/usernames/
  * Returns an array of all stored Twitter usernames
  */
-exports.getAllUsernames = async (req, res, next) => {
+exports.getAllCreators = async (req, res, next) => {
   try {
     if (!fs.existsSync(usernamesFilePath)) {
-      return res.status(200).json({ usernames: [] });
+      return res.status(200).json({ creatorNames: [] });
     }
 
     const fileContent = fs.readFileSync(usernamesFilePath, "utf8");
     const data = JSON.parse(fileContent || "{}");
 
     return res.status(200).json({
-      usernames: data.usernames || [],
+      creatorNames: data.creatorNames || [],
     });
   } catch (error) {
     next(error);

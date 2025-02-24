@@ -5,6 +5,6 @@ const creatorController = require("../controllers/creatorToken");
 router.get("/get-creator-data/", creatorController.getDataByUsername);
 router.post("/post-creator-token/", creatorController.storeByUsername);
 
-router.get("/usernames/", creatorController.getAllUsernames);
+router.get("/creator-names/", creatorController.getAllCreators);
 
 module.exports = router;
