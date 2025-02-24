@@ -1,0 +1,17 @@
+{
+    "users": [
+      {
+        "username": "alice",
+        "walletAddress": "0x1234567890abcdef1234567890abcdef12345678"
+      },
+      {
+        "username": "bob",
+        "walletAddress": "0xabcdef1234567890abcdef1234567890abcdef12"
+      },
+      {
+        "username": "charlie",
+        "walletAddress": "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+      }
+    ]
+  }
+  

@@ -3,13 +3,21 @@
     {
       "creatorName": "johndoe123",
       "days": {
+        "2025-02-23": {
+          "latestAttention": 100,
+          "unix-timestamp": 1730064000,
+          "reqHash": "zxcv5678",
+          "resHash": "qwer1234"
+        },
         "2025-02-24": {
           "latestAttention": 150,
+          "unix-timestamp": 1730150400,
           "reqHash": "abcd1234",
           "resHash": "efgh5678"
         },
         "2025-02-25": {
           "latestAttention": 200,
+          "unix-timestamp": 1730236800,
           "reqHash": "ijkl9012",
           "resHash": "mnop3456"
         }
