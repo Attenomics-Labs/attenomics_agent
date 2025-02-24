@@ -1,0 +1,30 @@
+{
+    "2025-02-23": {
+      "unixTimestamp": 1730064000,
+      "reqHash": "hashDaily1",
+      "resHash": "hashDailyA",
+      "distribution": [
+        { "creatorName": "johndoe123", "attention": 1400 },
+        { "creatorName": "alice", "attention": 1000 }
+      ]
+    },
+    "2025-02-24": {
+      "unixTimestamp": 1730150400,
+      "reqHash": "hashDaily2",
+      "resHash": "hashDailyB",
+      "distribution": [
+        { "creatorName": "johndoe123", "attention": 1200 },
+        { "creatorName": "alice", "attention": 1200 }
+      ]
+    },
+    "2025-02-25": {
+      "unixTimestamp": 1730236800,
+      "reqHash": "hashDaily3",
+      "resHash": "hashDailyC",
+      "distribution": [
+        { "creatorName": "johndoe123", "attention": 1100 },
+        { "creatorName": "alice", "attention": 1300 }
+      ]
+    }
+  }
+  
