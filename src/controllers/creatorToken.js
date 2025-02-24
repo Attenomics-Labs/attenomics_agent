@@ -4,7 +4,7 @@ const { fetchMetadataFromIpfs } = require("../externalApi/IpfsApi");
 
 // Path to the JSON file where data will be stored
 const dataFilePath = path.join(__dirname, "..", "data", "creatorData.json");
-const usernamesFilePath = path.join(__dirname, "..", "data", "creatorNames.json");
+const creatorNameFilePath = path.join(__dirname, "..", "data", "creatorNames.json");
 
 /**
  * POST /api/data/store
@@ -113,20 +113,20 @@ exports.storeByUsername = async (req, res, next) => {
       "utf8"
     );
 
-    // Handle usernames.json
-    let usernames = [];
-    if (fs.existsSync(usernamesFilePath)) {
-      const usernamesContent = fs.readFileSync(usernamesFilePath, "utf8");
-      const usernamesData = JSON.parse(usernamesContent || "{}");
-      usernames = usernamesData.usernames || [];
+    // Handle creatorNames.json
+    let creatorNames = [];
+    if (fs.existsSync(creatorNameFilePath)) {
+      const creatorNamesContent = fs.readFileSync(creatorNameFilePath, "utf8");
+      const creatorNamesData = JSON.parse(creatorNamesContent || "{}");
+      creatorNames = creatorNamesData.creatorNames || [];
     }
 
-    if (!usernames.includes(twitterUsername)) {
-      usernames.push(twitterUsername);
+    if (!creatorNames.includes(twitterUsername)) {
+      creatorNames.push(twitterUsername);
     }
     fs.writeFileSync(
-      usernamesFilePath,
-      JSON.stringify({ usernames }, null, 2),
+      creatorNameFilePath,
+      JSON.stringify({ creatorNames }, null, 2),
       "utf8"
     );
 
@@ -136,7 +136,7 @@ exports.storeByUsername = async (req, res, next) => {
       username: twitterUsername,
       filesCreated: {
         creatorData: dataFilePath,
-        usernames: usernamesFilePath,
+        creatorNames: creatorNameFilePath,
       },
     });
   } catch (error) {
@@ -145,16 +145,16 @@ exports.storeByUsername = async (req, res, next) => {
 };
 
 /**
- * GET /api/creator/usernames/
- * Returns an array of all stored Twitter usernames
+ * GET /api/creator/creatorNames/
+ * Returns an array of all stored Twitter creatorNames
  */
 exports.getAllCreators = async (req, res, next) => {
   try {
-    if (!fs.existsSync(usernamesFilePath)) {
+    if (!fs.existsSync(creatorNameFilePath)) {
       return res.status(200).json({ creatorNames: [] });
     }
 
-    const fileContent = fs.readFileSync(usernamesFilePath, "utf8");
+    const fileContent = fs.readFileSync(creatorNameFilePath, "utf8");
     const data = JSON.parse(fileContent || "{}");
 
     return res.status(200).json({
