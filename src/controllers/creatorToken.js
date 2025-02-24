@@ -5,7 +5,6 @@ const { fetchMetadataFromIpfs } = require("../externalApi/IpfsApi");
 // Path to the JSON file where data will be stored
 const dataFilePath = path.join(__dirname, "..", "data", "creatorData.json");
 const usernamesFilePath = path.join(__dirname, "..", "data", "usernames.json");
-const nftArrayFilePath = path.join(__dirname, "..", "data", "nftArray.json");
 
 /**
  * POST /api/data/store
@@ -131,38 +130,6 @@ exports.storeByUsername = async (req, res, next) => {
       "utf8"
     );
 
-    // Handle nftArray.json
-    try {
-      const nftMetadata = await fetchMetadataFromIpfs(nftIpfsCid);
-      let nftArray = [];
-
-      if (fs.existsSync(nftArrayFilePath)) {
-        const nftArrayContent = fs.readFileSync(nftArrayFilePath, "utf8");
-        const nftArrayData = JSON.parse(nftArrayContent || "{}");
-        nftArray = nftArrayData.nfts || [];
-      }
-
-      // Remove existing entry if present
-      nftArray = nftArray.filter((nft) => nft.username !== twitterUsername);
-
-      // Add new entry
-      nftArray.push({
-        username: twitterUsername,
-        creatorWalletAddress,
-        name: nftMetadata.name,
-        symbol: nftMetadata.symbol,
-        image: nftMetadata.image,
-        description: nftMetadata.description,
-      });
-
-      fs.writeFileSync(
-        nftArrayFilePath,
-        JSON.stringify({ nfts: nftArray }, null, 2),
-        "utf8"
-      );
-    } catch (error) {
-      console.error(`Error updating NFT array for ${twitterUsername}:`, error);
-    }
 
     return res.status(200).json({
       message: "Data stored successfully",
@@ -170,7 +137,6 @@ exports.storeByUsername = async (req, res, next) => {
       filesCreated: {
         creatorData: dataFilePath,
         usernames: usernamesFilePath,
-        nftArray: nftArrayFilePath,
       },
     });
   } catch (error) {
@@ -199,33 +165,3 @@ exports.getAllUsernames = async (req, res, next) => {
   }
 };
 
-/**
- * GET api/creator/nfts/
- * Returns an array of all NFT metadata associated with creators
- * Optional query parameter: limit (number) - limits the number of NFTs returned
- */
-exports.getNftArray = async (req, res, next) => {
-  try {
-    if (!fs.existsSync(nftArrayFilePath)) {
-      return res.status(200).json({ nfts: [] });
-    }
-
-    const { limit } = req.query;
-    const fileContent = fs.readFileSync(nftArrayFilePath, "utf8");
-    const data = JSON.parse(fileContent || "{}");
-
-    let nfts = data.nfts || [];
-
-    // If limit is provided and is a valid number, limit the results
-    if (limit && !isNaN(limit) && limit > 0) {
-      nfts = nfts.slice(0, parseInt(limit));
-    }
-
-    return res.status(200).json({
-      nfts,
-      total: data.nfts ? data.nfts.length : 0,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
