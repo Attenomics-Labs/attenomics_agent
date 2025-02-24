@@ -1,43 +1,42 @@
 {
-    "attention": [
-      {
-        "creatorName": "johndoe123",
-        "days": {
-          "2025-02-23": {
-            "latestAttention": 100,
-            "unix-timestamp": 1730064000,
-            "distribution": [
-              { "alice": 30 },
-              { "bob": 50 },
-              { "charlie": 20 }
-            ],
-            "reqHash": "zxcv5678",
-            "resHash": "qwer1234"
-          },
-          "2025-02-24": {
-            "latestAttention": 150,
-            "unix-timestamp": 1730150400,
-            "distribution": [
-              { "vwakesahu": 45 },
-              { "devswayam": 35 },
-              { "0xabhii": 20 }
-            ],
-            "reqHash": "abcd1234",
-            "resHash": "efgh5678"
-          },
-          "2025-02-25": {
-            "latestAttention": 200,
-            "unix-timestamp": 1730236800,
-            "distribution": [
-              { "david": 40 },
-              { "eve": 30 },
-              { "frank": 30 }
-            ],
-            "reqHash": "ijkl9012",
-            "resHash": "mnop3456"
-          }
+  "attention": [
+    {
+      "creatorName": "johndoe123",
+      "days": {
+        "2025-02-23": {
+          "latestAttention": 100,
+          "unix-timestamp": 1730064000,
+          "distribution": [
+            { "name": "alice", "walletAddress": "0x1111...", "percentage": 30 },
+            { "name": "bob", "walletAddress": "0x2222...", "percentage": 50 },
+            { "name": "charlie", "walletAddress": "0x3333...", "percentage": 20 }
+          ],
+          "reqHash": "zxcv5678",
+          "resHash": "qwer1234"
+        },
+        "2025-02-24": {
+          "latestAttention": 150,
+          "unix-timestamp": 1730150400,
+          "distribution": [
+            { "name": "vwakesahu", "walletAddress": "0xaaa...", "percentage": 45 },
+            { "name": "devswayam", "walletAddress": "0xbbb...", "percentage": 35 },
+            { "name": "0xabhii", "walletAddress": "0xccc...", "percentage": 20 }
+          ],
+          "reqHash": "abcd1234",
+          "resHash": "efgh5678"
+        },
+        "2025-02-25": {
+          "latestAttention": 200,
+          "unix-timestamp": 1730236800,
+          "distribution": [
+            { "name": "david", "walletAddress": "0xddd...", "percentage": 40 },
+            { "name": "eve", "walletAddress": "0xeee...", "percentage": 30 },
+            { "name": "frank", "walletAddress": "0xfff...", "percentage": 30 }
+          ],
+          "reqHash": "ijkl9012",
+          "resHash": "mnop3456"
         }
       }
-    ]
-  }
-  
+    }
+  ]
+}

@@ -1,3 +1,36 @@
 {
-    "to-do":"to-do"
+  "creatorName": "johndoe123",
+  "tokenContract": "0xABCDEF1234567890ABCDEF1234567890ABCDEF12",
+  "distributionContract": "0x1234567890ABCDEF1234567890ABCDEF12345678",
+  "agentAddress": "0xAgentAddressExample",
+  "scheme": "MPC",
+  "weekDistribution": [
+    {
+      "weekStart": "2025-02-17",
+      "DistributionData": {
+        "recipients": [
+          "0x1111111111111111111111111111111111111111",
+          "0x2222222222222222222222222222222222222222",
+          "0x3333333333333333333333333333333333333333"
+        ],
+        "amounts": [800, 900, 700],
+        "totalAmount": 2400
+      },
+      "dataHash": "hashWeek1",
+      "signedHash": "signedHashWeek1"
+    },
+    {
+      "weekStart": "2025-02-24",
+      "DistributionData": {
+        "recipients": [
+          "0x4444444444444444444444444444444444444444",
+          "0x5555555555555555555555555555555555555555"
+        ],
+        "amounts": [1200, 1200],
+        "totalAmount": 2400
+      },
+      "dataHash": "hashWeek2",
+      "signedHash": "signedHashWeek2"
+    }
+  ]
 }
