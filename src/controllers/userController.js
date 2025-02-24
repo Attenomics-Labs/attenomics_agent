@@ -3,8 +3,18 @@ const fs = require("fs");
 const getScraper = require("../utils/scraper.js");
 
 // Paths to the JSON files
-const registeredCreatorsPath = path.join(__dirname, "..", "data", "creatorNames.json");
-const creatorDataFilePath = path.join(__dirname, "..", "data", "creatorData.json");
+const registeredCreatorsPath = path.join(
+  __dirname,
+  "..",
+  "data",
+  "creatorNames.json"
+);
+const creatorDataFilePath = path.join(
+  __dirname,
+  "..",
+  "data",
+  "creatorData.json"
+);
 
 exports.getUserFollowersWhoCreatedTokens = async (req, res, next) => {
   try {
@@ -19,23 +29,42 @@ exports.getUserFollowersWhoCreatedTokens = async (req, res, next) => {
     console.log(`Fetching following list for ${username}...`);
 
     // Use the async generator once to build the list.
-    const followingGenerator = await scraper.getFollowing(username);
-    console.log("followingGenerator:", followingGenerator); 
     const userProfile = await scraper.getProfile(username);
+
+    if (!userProfile || !userProfile.userId) {
+      return res.status(404).json({
+        message: "User profile not found or userId not available",
+        username,
+      });
+    }
+
+    const userId = userProfile.userId;
+    console.log(`Found userId: ${userId} for username: ${username} having userId: ${userId}`);
+    const followingGenerator = await scraper.getFollowing(userId, userProfile.followingCount);
+    console.log("followingGenerator:", followingGenerator);
     console.log("user profile:", userProfile);
     console.log("user profile :", userProfile.canDm);
     for await (const userObj of followingGenerator) {
       console.log(`Found user: ${userObj.username}`);
       followingHandles.push(userObj.username);
     }
-    console.log(`Found ${followingHandles.length} accounts that ${username} is following`);
+    console.log(
+      `Found ${followingHandles.length} accounts that ${username} is following`
+    );
 
     // 2. Read the list of registered creators.
     if (!fs.existsSync(registeredCreatorsPath)) {
-      return res.status(404).json({ message: "No registeredCreators file found" });
+      return res
+        .status(404)
+        .json({ message: "No registeredCreators file found" });
     }
-    const registeredCreatorsContent = fs.readFileSync(registeredCreatorsPath, "utf8");
-    const registeredCreatorsData = JSON.parse(registeredCreatorsContent || "{}");
+    const registeredCreatorsContent = fs.readFileSync(
+      registeredCreatorsPath,
+      "utf8"
+    );
+    const registeredCreatorsData = JSON.parse(
+      registeredCreatorsContent || "{}"
+    );
 
     // Correct extraction: registeredCreatorsData.creatorNames is already an array.
     const creatorNames = registeredCreatorsData.creatorNames || [];
@@ -57,7 +86,7 @@ exports.getUserFollowersWhoCreatedTokens = async (req, res, next) => {
     const matchedCreatorData = matchedCreators.map((creatorName) => {
       return {
         creatorName,
-        ...creatorData[creatorName]
+        ...creatorData[creatorName],
       };
     });
 
