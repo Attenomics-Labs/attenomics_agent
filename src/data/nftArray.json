@@ -1,12 +1,15 @@
 {
   "nfts": [
     {
-      "username": "vwakesahu",
-      "creatorWalletAddress": "0xc6377415Ee98A7b71161Ee963603eE52fF7750FC",
-      "name": "Vivek",
-      "symbol": "VIK",
-      "image": "https://gateway.pinata.cloud/ipfs/QmfKnMSs2ofw1uMFommbqnksGVPXzYkZt7nmWsv7d1ydgt",
-      "description": "Vivek Creator Token"
+      "creatorName": "vwakesahu",
+      "data": {
+        "creatorWalletAddress": "0xc6377415Ee98A7b71161Ee963603eE52fF7750FC",
+        "name": "Vivek",
+        "symbol": "VIK",
+        "image": "https://gateway.pinata.cloud/ipfs/QmfKnMSs2ofw1uMFommbqnksGVPXzYkZt7nmWsv7d1ydgt",
+              "description": "Vivek Creator Token"
+      },
+      "fraudProof":"http://localhost:3000/get-fraudProof/?creatorName=vwakesahu"
     }
   ]
 }
