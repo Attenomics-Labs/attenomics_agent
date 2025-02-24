@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const creatorController = require("../controllers/creatorToken");
+const userController = require("../controllers/userController");
 
-router.get("/get-creator-data/", creatorController.getDataByUsername);
-router.post("/post-creator-token/", creatorController.storeByUsername);
+router.get("/get-user-following-creators/", userController.getUserFollowersWhoCreatedTokens);
 
-router.get("/creator-names/", creatorController.getAllCreators);
 
 module.exports = router;

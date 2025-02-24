@@ -25,7 +25,6 @@ async function getScraper() {
   } else {
     console.log('Scraper is already logged in.');
   }
-
   return scraper;
 };
 
