@@ -9,7 +9,7 @@
         "image": "https://gateway.pinata.cloud/ipfs/QmfKnMSs2ofw1uMFommbqnksGVPXzYkZt7nmWsv7d1ydgt",
               "description": "Vivek Creator Token"
       },
-      "fraudProof":"http://localhost:3000/get-fraudProof/?creatorName=vwakesahu"
+      "fraudProof":"http://localhost:3000/attention/get-fraud-proof/?creatorName=vwakesahu"
     }
   ]
 }
