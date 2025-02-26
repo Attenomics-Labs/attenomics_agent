@@ -1,14 +1,23 @@
 // server.js
 require('dotenv').config();
 const express = require('express');
+const connectDB = require('./src/config/db');
 const app = express();
 
-// Middleware to parse JSON requests
+// Connect to MongoDB
+connectDB();
+
+// Middleware to parse JSON
 app.use(express.json());
 
-// Mounting routes under /api
-const routes = require('./src/routes');
-app.use('/api', routes);
+// Mount the items routes
+const itemsRoute = require('./src/routes/items');
+app.use('/api/items', itemsRoute);
+  
+// Basic test route
+app.get('/', (req, res) => {
+  res.send('Hello, world!');
+});
 
 // Global error handling middleware
 const errorHandler = require('./src/middleware/errorHandler');
