@@ -13,7 +13,18 @@ app.use(express.json());
 // Mount the items routes
 const itemsRoute = require('./src/routes/items');
 app.use('/api/items', itemsRoute);
-  
+
+// Add additional routes
+const creatorTokenRoute = require('./src/routes/creatorTokenRoute');
+const scraperRoute = require('./src/routes/scraperRoute');
+const attentionRoute = require('./src/routes/attentionRoute');
+const userRoute = require('./src/routes/userRoute');
+
+app.use('/creator', creatorTokenRoute);
+app.use('/scraper', scraperRoute);
+app.use('/attention', attentionRoute);
+app.use('/user', userRoute);
+
 // Basic test route
 app.get('/', (req, res) => {
   res.send('Hello, world!');
