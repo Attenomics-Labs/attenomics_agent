@@ -10,22 +10,27 @@ connectDB();
 // Middleware to parse JSON
 app.use(express.json());
 
-// Mount the items routes
+// Mount existing routes
 const itemsRoute = require('./src/routes/items');
 app.use('/api/items', itemsRoute);
 
-// Add additional routes
-const creatorTokenRoute = require('./src/routes/creatorTokenRoute');
-const scraperRoute = require('./src/routes/scraperRoute');
-const attentionRoute = require('./src/routes/attentionRoute');
-const userRoute = require('./src/routes/userRoute');
-const nftRoute = require('./src/routes/nftRoute');
+const creatorTokenRoute = require('./creatorTokenRoute');
+const scraperRoute = require('./scraperRoute');
+const attentionRoute = require('./attentionRoute');
+const userRoute = require('./userRoute');
 
 app.use('/creator', creatorTokenRoute);
 app.use('/scraper', scraperRoute);
 app.use('/attention', attentionRoute);
 app.use('/user', userRoute);
+
+// Mount NFT routes (if present)
+const nftRoute = require('./src/routes/nftRoute');
 app.use('/nft', nftRoute);
+
+// Mount Weekly Distribution route
+const weeklyDistributionRoute = require('./src/routes/weeklyDistributionRoute');
+app.use('/weekly-distribution', weeklyDistributionRoute);
 
 // Basic test route
 app.get('/', (req, res) => {
