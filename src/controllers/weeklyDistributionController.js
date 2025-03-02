@@ -9,7 +9,8 @@ const computeHash = (data) => {
   return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
 };
 
-// New endpoint: Process weekly distribution for EVERY creator in the DB
+// New endpoint: Process weekly distribution for EVERY creator in the DB,
+// but only add week entries that have daily data.
 exports.createWeeklyDistributionForAll = async (req, res) => {
   console.log("Received POST /weekly-distribution/all with body:", req.body);
   try {
@@ -38,17 +39,20 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
     for (let creator of creators) {
       // Retrieve attention data for the creator
       const attentionDoc = await Attention.findOne({ creatorName: creator.creatorName });
-      if (!attentionDoc) continue; // skip if no attention data
+      if (!attentionDoc) {
+        console.log(`No attention data found for ${creator.creatorName}, skipping...`);
+        continue; // skip if no attention data
+      }
       
       let distributionMap = {}; // key: walletAddress, value: cumulative amount
       let allAttentionEntries = []; // for hash computation
-      let dailyDataList = []; // array to store daily data
+      let dailyDataList = []; // array to store daily data for the week
       
       // Iterate over each day's attention data stored in the Map
       attentionDoc.days.forEach((dayData, dayKey) => {
         const dayDate = new Date(dayKey);
         if (dayDate >= startDate && dayDate < endDate) {
-          // Push daily data to our list (include the day key)
+          // Add this day's data to the dailyData list
           dailyDataList.push({
             day: dayKey,
             latestAttention: dayData.latestAttention,
@@ -67,6 +71,12 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
           });
         }
       });
+      
+      // If no daily data was collected, skip creating a week entry
+      if (dailyDataList.length === 0) {
+        console.log(`No daily data for creator ${creator.creatorName} in week starting ${weekStart}, skipping week entry.`);
+        continue;
+      }
       
       // Build aggregated DistributionData
       const recipients = [];
@@ -103,16 +113,22 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
           weekDistribution: [weekEntry]
         });
       } else {
+        // Append new week entry only if it contains dailyData
         weeklyDistributionDoc.weekDistribution.push(weekEntry);
         await weeklyDistributionDoc.save();
       }
       
       results.push(weeklyDistributionDoc);
     }
-    
+    const filteredResults = results.map(doc => {
+        const obj = doc.toObject();
+        // Filter out any weekDistribution entries with empty dailyData
+        obj.weekDistribution = obj.weekDistribution.filter(entry => Array.isArray(entry.dailyData) && entry.dailyData.length > 0);
+        return obj;
+      });
     return res.status(201).json({ 
       message: "Weekly Distribution created for all creators", 
-      data: results.map(doc => doc.toObject()) 
+      data: filteredResults 
     });
   } catch (error) {
     console.error("Error in createWeeklyDistributionForAll:", error);

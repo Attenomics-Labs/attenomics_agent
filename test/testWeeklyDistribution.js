@@ -15,7 +15,7 @@ const testWeeklyDistributionForAll = async () => {
     console.log("Weekly Distribution for all creators:");
     console.log(JSON.stringify(response.data, null, 2));
     
-    // Optionally, add verification of the calculated totals against expected values.
+    // You may add further assertions to verify calculations here.
   } catch (error) {
     console.error("Error testing weekly distribution for all:", error.response ? error.response.data : error.message);
   }
