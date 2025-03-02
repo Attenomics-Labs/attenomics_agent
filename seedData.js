@@ -55,7 +55,40 @@ const seedData = async () => {
       }
     });
     console.log('Inserted Attention:', attention);
+   // Insert a sample Creator document
+   const creator2 = await Creator.create({
+    creatorName: "Anjanay",
+    creatorTokenAddress: "0x123456789",
+    distributorContractAddress: "0x987654321",
+    bondingCurveAddress: "0x111222333",
+    selfTokenVaultAddress: "0x444555666",
+    socialDataUser: {
+      telegramGroup: "Group1",
+      otherSocialProfiles: "twitter.com/JohnDoe"
+    },
+    creatorWalletAddress: "0xabcdef123",
+    nftIpfsCid: "cid12345",
+    entryPointAddress: "0x999888777"
+  });
+  console.log('Inserted Creator:', creator2);
 
+  // Insert a sample Attention document
+  const attention2 = await Attention.create({
+    creatorName: "Anjanay",
+    days: {
+      "2025-02-20": {
+        latestAttention: 100,
+        unixTimestamp: 1676966400,
+        reqHash: "reqhash123",
+        resHash: "reshash123",
+        distribution: [
+          { name: "Alice", walletAddress: "0xabc", percentage: 50 },
+          { name: "Bob", walletAddress: "0xdef", percentage: 50 }
+        ]
+      }
+    }
+  });
+  console.log('Inserted Attention:', attention2);
     // Insert a sample User document
     const user = await User.create({
       username: "follower1",

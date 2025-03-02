@@ -19,11 +19,13 @@ const creatorTokenRoute = require('./src/routes/creatorTokenRoute');
 const scraperRoute = require('./src/routes/scraperRoute');
 const attentionRoute = require('./src/routes/attentionRoute');
 const userRoute = require('./src/routes/userRoute');
+const nftRoute = require('./src/routes/nftRoute');
 
 app.use('/creator', creatorTokenRoute);
 app.use('/scraper', scraperRoute);
 app.use('/attention', attentionRoute);
 app.use('/user', userRoute);
+app.use('/nft', nftRoute);
 
 // Basic test route
 app.get('/', (req, res) => {
