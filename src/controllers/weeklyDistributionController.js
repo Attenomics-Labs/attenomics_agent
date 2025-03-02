@@ -9,6 +9,8 @@ const computeHash = (data) => {
 };
 
 exports.createWeeklyDistribution = async (req, res) => {
+    console.log("Received POST /weekly-distribution with body:", req.body);
+
   try {
     const {
       creatorName,

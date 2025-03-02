@@ -14,10 +14,10 @@ app.use(express.json());
 const itemsRoute = require('./src/routes/items');
 app.use('/api/items', itemsRoute);
 
-const creatorTokenRoute = require('./creatorTokenRoute');
-const scraperRoute = require('./scraperRoute');
-const attentionRoute = require('./attentionRoute');
-const userRoute = require('./userRoute');
+const creatorTokenRoute = require('./src/routes/creatorTokenRoute');
+const scraperRoute = require('./src/routes/scraperRoute');
+const attentionRoute = require('./src/routes/attentionRoute');
+const userRoute = require('./src/routes/userRoute');
 
 app.use('/creator', creatorTokenRoute);
 app.use('/scraper', scraperRoute);

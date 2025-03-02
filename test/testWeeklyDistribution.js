@@ -17,8 +17,8 @@ const testWeeklyDistribution = async () => {
         "Content-Type": "application/json"
       }
     });
-    console.log("Weekly Distribution Response:", response.data);
-  } catch (error) {
+    console.log("Weekly Distribution Response:", JSON.stringify(response.data, null, 2));
+} catch (error) {
     console.error("Error testing weekly distribution:", error.response ? error.response.data : error.message);
   }
 };
