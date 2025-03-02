@@ -11,6 +11,19 @@ const DistributionDataSchema = new Schema({
 const WeekDistributionDetailSchema = new Schema({
   weekStart: { type: String, required: true },
   DistributionData: DistributionDataSchema,
+  // Store all daily attention data for the week as an array
+  dailyData: [{ 
+    day: String,
+    latestAttention: Number,
+    unixTimestamp: Number,
+    reqHash: String,
+    resHash: String,
+    distribution: [{
+      name: String,
+      walletAddress: String,
+      percentage: Number
+    }]
+  }],
   dataHash: String,
   signedHash: String
 });
