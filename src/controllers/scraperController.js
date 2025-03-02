@@ -34,3 +34,32 @@ const getLatestTweet = async (req, res) => {
 };
 
 module.exports = { getTweets, getLatestTweet };
+
+// POST /scraper/tweets
+// Expects body: { user: "username", maxTweets: 3 }
+exports.getTweets = async (req, res) => {
+  try {
+    const { user, maxTweets } = req.body;
+    // Create dummy tweet data.
+    const tweets = [];
+    for (let i = 0; i < (maxTweets || 5); i++) {
+      tweets.push({ tweet: `Tweet ${i + 1} from ${user}` });
+    }
+    res.status(200).json({ tweets });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// POST /scraper/latest-tweet
+// Expects body: { user: "username" }
+exports.getLatestTweet = async (req, res) => {
+  try {
+    const { user } = req.body;
+    // Return dummy latest tweet data.
+    res.status(200).json({ tweet: `Latest tweet from ${user}` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

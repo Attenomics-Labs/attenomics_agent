@@ -42,3 +42,18 @@ exports.getFraudProofByUserName = async (req, res, next) => {
     next(error);
   }
 };
+
+const Attention = require('../models/Attention');
+
+// GET /attention/get-fraud-proof/?username=JohnDoe
+// Retrieves the Attention data for a given creator name.
+exports.getFraudProofByUserName = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const attentionData = await Attention.findOne({ creatorName: username });
+    if (!attentionData) return res.status(404).json({ message: 'No attention data found' });
+    res.status(200).json({ data: attentionData });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

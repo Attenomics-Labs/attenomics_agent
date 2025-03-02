@@ -96,3 +96,16 @@ exports.getUserFollowersWhoCreatedTokens = async (req, res, next) => {
     next(error);
   }
 };
+
+const User = require('../models/User');
+
+// GET /user/get-user-following-creators/
+// For testing, simply return all users.
+exports.getUserFollowersWhoCreatedTokens = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ data: users });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

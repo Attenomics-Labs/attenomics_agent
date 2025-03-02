@@ -165,3 +165,42 @@ exports.getAllCreators = async (req, res, next) => {
   }
 };
 
+const Creator = require('../models/Creator');
+
+// POST /creator/post-creator-token/
+// This endpoint will add a new creator document.
+exports.storeByUsername = async (req, res) => {
+  try {
+    // Expect the request body to include the creator fields.
+    const newCreator = await Creator.create(req.body);
+    res.status(201).json({ message: 'Creator created successfully', data: newCreator });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /creator/get-creator-data/?username=JohnDoe
+// This endpoint retrieves creator data based on the creatorName (passed as a query parameter).
+exports.getDataByUsername = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const creator = await Creator.findOne({ creatorName: username });
+    if (!creator) return res.status(404).json({ message: 'Creator not found' });
+    res.status(200).json({ data: creator });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET /creator/creator-names/
+// This endpoint returns only the names of all creators.
+exports.getAllCreators = async (req, res) => {
+  try {
+    const creators = await Creator.find({}, 'creatorName');
+    res.status(200).json({ data: creators });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
