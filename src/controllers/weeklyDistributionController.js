@@ -66,6 +66,7 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
           
           // For each distribution entry, calculate the daily amount and aggregate
           dayData.distribution.forEach(dist => {
+            // @dev retireve the token amount that needs to be distributed from the supporter contract and then use that instead of latestAttention
             const dailyAmount = dayData.latestAttention * (dist.percentage / 100);
             distributionMap[dist.walletAddress] = (distributionMap[dist.walletAddress] || 0) + dailyAmount;
           });
@@ -120,6 +121,8 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
       
       results.push(weeklyDistributionDoc);
     }
+    // @dev lets figure it out later 
+    // @dev used to remove duplicate entries 
     const filteredResults = results.map(doc => {
         const obj = doc.toObject();
         // Filter out any weekDistribution entries with empty dailyData
