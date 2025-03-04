@@ -1,12 +1,16 @@
-// src/controllers/weeklyDistributionController.js
-const WeeklyDistribution = require('../models/WeeklyDistribution');
-const Attention = require('../models/Attention');
-const Creator = require('../models/Creator'); // for fetching creator details
-const crypto = require('crypto');
+const path = require("path");
+const fs = require("fs");
+const getScraper = require("../utils/scraper.js");
+const WeeklyDistribution = require("../models/WeeklyDistribution");
+const Attention = require("../models/Attention");
+const Creator = require("../models/Creator");
+const crypto = require("crypto");
+const { abi, provider } = require("../config/web3/contractConfig");
+const { ethers } = require("ethers"); // Ensure ethers is imported
 
 // Helper function to compute hash
 const computeHash = (data) => {
-  return crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
+  return crypto.createHash("sha256").update(JSON.stringify(data)).digest("hex");
 };
 
 // New endpoint: Process weekly distribution for EVERY creator in the DB,
@@ -41,15 +45,15 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
       const attentionDoc = await Attention.findOne({ creatorName: creator.creatorName });
       if (!attentionDoc) {
         console.log(`No attention data found for ${creator.creatorName}, skipping...`);
-        continue; // skip if no attention data
+        continue;
       }
       
       let distributionMap = {}; // key: walletAddress, value: cumulative amount
       let allAttentionEntries = []; // for hash computation
       let dailyDataList = []; // array to store daily data for the week
       
-      // Iterate over each day's attention data stored in the Map
-      attentionDoc.days.forEach((dayData, dayKey) => {
+      // Iterate over each day's attention data using for...of loop
+      for (const [dayKey, dayData] of Object.entries(attentionDoc.days)) {
         const dayDate = new Date(dayKey);
         if (dayDate >= startDate && dayDate < endDate) {
           // Add this day's data to the dailyData list
@@ -64,14 +68,24 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
           // Also collect for hash computation
           allAttentionEntries.push({ day: dayKey, data: dayData });
           
+          // Create distributor contract instance using creator's distributor contract address
+          const distributorContract = new ethers.Contract(
+            creator.distributorContractAddress,
+            abi.creatorTokenSupporterAbi,
+            provider
+          );
+          // Get the distributor config and daily drip amount
+          const distributorConfig = await distributorContract.distributorConfig();
+          const dailyDripAmountToDistribute = distributorConfig.dailyDripAmount;
+          
           // For each distribution entry, calculate the daily amount and aggregate
-          dayData.distribution.forEach(dist => {
-            // @dev retireve the token amount that needs to be distributed from the supporter contract and then use that instead of latestAttention
-            const dailyAmount = dayData.latestAttention * (dist.percentage / 100);
+          // (Assuming each entry has a walletAddress and percentage)
+          for (const dist of dayData.distribution) {
+            const dailyAmount = dailyDripAmountToDistribute * (dist.percentage / 100);
             distributionMap[dist.walletAddress] = (distributionMap[dist.walletAddress] || 0) + dailyAmount;
-          });
+          }
         }
-      });
+      }
       
       // If no daily data was collected, skip creating a week entry
       if (dailyDataList.length === 0) {
@@ -121,14 +135,13 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
       
       results.push(weeklyDistributionDoc);
     }
-    // @dev lets figure it out later 
-    // @dev used to remove duplicate entries 
+    
+    // Filter out any weekDistribution entries with empty dailyData
     const filteredResults = results.map(doc => {
-        const obj = doc.toObject();
-        // Filter out any weekDistribution entries with empty dailyData
-        obj.weekDistribution = obj.weekDistribution.filter(entry => Array.isArray(entry.dailyData) && entry.dailyData.length > 0);
-        return obj;
-      });
+      const obj = doc.toObject();
+      obj.weekDistribution = obj.weekDistribution.filter(entry => Array.isArray(entry.dailyData) && entry.dailyData.length > 0);
+      return obj;
+    });
     return res.status(201).json({ 
       message: "Weekly Distribution created for all creators", 
       data: filteredResults 
