@@ -11,7 +11,7 @@ const WeeklyDistribution = require("../models/WeeklyDistribution");
 const Attention = require("../models/Attention");
 const Creator = require("../models/Creator");
 const crypto = require("crypto");
-const { contracts, provider } = require("../config/web3/contractConfig");
+const { contracts, provider, wallet } = require("../config/web3/contractConfig");
 const { ethers } = require("ethers");
 
 /**
@@ -192,9 +192,30 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
         totalAmount: totalAmountInWei.toString() 
       };
 
-      // Generate unique identifiers for the distribution data
-      const dataHash = computeHash(allAttentionEntries);
-      const signedHash = "signed_" + dataHash;
+      // Encode the distribution data in the same format as the contract's abi.decode
+      const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
+        ['tuple(address[],uint256[],uint256)'],
+        [[distributionData.recipients, distributionData.amounts, distributionData.totalAmount]]
+      );
+
+      console.log('Distribution Data:', {
+        recipients: distributionData.recipients,
+        amounts: distributionData.amounts,
+        totalAmount: distributionData.totalAmount
+      });
+      console.log('Encoded Data (for contract):', encodedData);
+      console.log('Encoded Data Length:', encodedData.length);
+
+      // Compute keccak256 hash of the distribution data (matching contract's scheme)
+      const dataHash = ethers.keccak256(
+        ethers.AbiCoder.defaultAbiCoder().encode(
+          ['address[]', 'uint256[]', 'uint256'],
+          [distributionData.recipients, distributionData.amounts, distributionData.totalAmount]
+        )
+      );
+
+      // Sign the hash with the wallet
+      const signedHash = await wallet.signMessage(ethers.getBytes(dataHash));
 
       // Create week entry object
       const weekEntry = {
