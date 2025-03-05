@@ -47,8 +47,8 @@ const seedData = async () => {
           reqHash: "reqhash17",
           resHash: "reshash17",
           distribution: [
-            { name: "Alice", walletAddress: "0x111", percentage: 60 },
-            { name: "Bob", walletAddress: "0x222", percentage: 40 }
+            { name: "Alice", walletAddress: "0xBaFc2C2Fd55230D1d3d0Bf95EdFaF10aA109245D", percentage: 60 },
+            { name: "Bob", walletAddress: "0x1950498e95274Dc79Fbca238C2BE53684D69886F", percentage: 40 }
           ]
         },
         "2025-02-18": {
@@ -57,8 +57,8 @@ const seedData = async () => {
           reqHash: "reqhash18",
           resHash: "reshash18",
           distribution: [
-            { name: "Alice", walletAddress: "0x111", percentage: 60 },
-            { name: "Bob", walletAddress: "0x222", percentage: 40 }
+            { name: "Alice", walletAddress: "0xBaFc2C2Fd55230D1d3d0Bf95EdFaF10aA109245D", percentage: 60 },
+            { name: "Bob", walletAddress: "0x1950498e95274Dc79Fbca238C2BE53684D69886F", percentage: 40 }
           ]
         },
         "2025-02-19": {
@@ -67,8 +67,8 @@ const seedData = async () => {
           reqHash: "reqhash19",
           resHash: "reshash19",
           distribution: [
-            { name: "Alice", walletAddress: "0x111", percentage: 60 },
-            { name: "Bob", walletAddress: "0x222", percentage: 40 }
+            { name: "Alice", walletAddress: "0xBaFc2C2Fd55230D1d3d0Bf95EdFaF10aA109245D", percentage: 60 },
+            { name: "Bob", walletAddress: "0x1950498e95274Dc79Fbca238C2BE53684D69886F", percentage: 40 }
           ]
         },
         "2025-02-20": {
@@ -77,8 +77,8 @@ const seedData = async () => {
           reqHash: "reqhash20",
           resHash: "reshash20",
           distribution: [
-            { name: "Alice", walletAddress: "0x111", percentage: 60 },
-            { name: "Bob", walletAddress: "0x222", percentage: 40 }
+            { name: "Alice", walletAddress: "0xBaFc2C2Fd55230D1d3d0Bf95EdFaF10aA109245D", percentage: 60 },
+            { name: "Bob", walletAddress: "0x1950498e95274Dc79Fbca238C2BE53684D69886F", percentage: 40 }
           ]
         },
         "2025-02-21": {
@@ -87,8 +87,8 @@ const seedData = async () => {
           reqHash: "reqhash21",
           resHash: "reshash21",
           distribution: [
-            { name: "Alice", walletAddress: "0x111", percentage: 60 },
-            { name: "Bob", walletAddress: "0x222", percentage: 40 }
+            { name: "Alice", walletAddress: "0xBaFc2C2Fd55230D1d3d0Bf95EdFaF10aA109245D", percentage: 60 },
+            { name: "Bob", walletAddress: "0x1950498e95274Dc79Fbca238C2BE53684D69886F", percentage: 40 }
           ]
         }
       }
@@ -122,8 +122,8 @@ const seedData = async () => {
           reqHash: "reqhash17_anj",
           resHash: "reshash17_anj",
           distribution: [
-            { name: "Charlie", walletAddress: "0x333", percentage: 70 },
-            { name: "David", walletAddress: "0x444", percentage: 30 }
+            { name: "Charlie", walletAddress: "0x0356Cad402a2582D7416dAE3f298F7470177677C", percentage: 70 },
+            { name: "David", walletAddress: "0x4AB9f7740fA4d9A9482C2C8F26f7C17269Da72Ad", percentage: 30 }
           ]
         },
         "2025-02-18": {
@@ -132,8 +132,8 @@ const seedData = async () => {
           reqHash: "reqhash18_anj",
           resHash: "reshash18_anj",
           distribution: [
-            { name: "Charlie", walletAddress: "0x333", percentage: 70 },
-            { name: "David", walletAddress: "0x444", percentage: 30 }
+            { name: "Charlie", walletAddress: "0x0356Cad402a2582D7416dAE3f298F7470177677C", percentage: 70 },
+            { name: "David", walletAddress: "0x4AB9f7740fA4d9A9482C2C8F26f7C17269Da72Ad", percentage: 30 }
           ]
         },
         "2025-02-19": {
@@ -142,8 +142,8 @@ const seedData = async () => {
           reqHash: "reqhash19_anj",
           resHash: "reshash19_anj",
           distribution: [
-            { name: "Charlie", walletAddress: "0x333", percentage: 70 },
-            { name: "David", walletAddress: "0x444", percentage: 30 }
+            { name: "Charlie", walletAddress: "0x0356Cad402a2582D7416dAE3f298F7470177677C", percentage: 70 },
+            { name: "David", walletAddress: "0x4AB9f7740fA4d9A9482C2C8F26f7C17269Da72Ad", percentage: 30 }
           ]
         }
       }

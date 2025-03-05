@@ -4,9 +4,7 @@ const axios = require('axios');
 const testWeeklyDistributionForAll = async () => {
   try {
     const payload = {
-      weekStart: "2025-02-17",
-      agentAddress: "0xAgentAddressExample",
-      scheme: "MPC"
+      weekStart: "2025-02-17"
     };
 
     const response = await axios.post('http://localhost:3000/weekly-distribution/all', payload, {
