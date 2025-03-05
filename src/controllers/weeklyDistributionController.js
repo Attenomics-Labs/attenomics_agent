@@ -224,6 +224,7 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
         dailyData: dailyDataList,
         dataHash,
         signedHash,
+        encodedData
       };
 
       // Update or create weekly distribution record

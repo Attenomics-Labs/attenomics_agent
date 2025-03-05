@@ -25,7 +25,8 @@ const WeekDistributionDetailSchema = new Schema({
     }]
   }],
   dataHash: String,
-  signedHash: String
+  signedHash: String,
+  encodedData: String  // Added field to store the encoded distribution data
 });
 
 const WeeklyDistributionSchema = new Schema({
