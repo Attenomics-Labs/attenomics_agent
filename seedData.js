@@ -24,7 +24,7 @@ const seedData = async () => {
     const creatorJohn = await Creator.create({
       creatorName: "JohnDoe",
       creatorTokenAddress: "0x123456789",
-      distributorContractAddress: "0x987654321",
+      distributorContractAddress: "0xB7A90bb4402861432c584b8c33eB4874f0676C47",
       bondingCurveAddress: "0x111222333",
       selfTokenVaultAddress: "0x444555666",
       socialDataUser: {
@@ -99,7 +99,7 @@ const seedData = async () => {
     const creatorAnjanay = await Creator.create({
       creatorName: "Anjanay",
       creatorTokenAddress: "0x123456789",
-      distributorContractAddress: "0x987654321",
+      distributorContractAddress: "0xB7A90bb4402861432c584b8c33eB4874f0676C47",
       bondingCurveAddress: "0x111222333",
       selfTokenVaultAddress: "0x444555666",
       socialDataUser: {

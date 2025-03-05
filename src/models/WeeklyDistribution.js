@@ -10,8 +10,18 @@ const DistributionDataSchema = new Schema({
 
 const WeekDistributionDetailSchema = new Schema({
   weekStart: { type: String, required: true },
+  // Signature-based distribution data
   DistributionData: DistributionDataSchema,
-  // Store all daily attention data for the week as an array
+  dataHash: String,
+  signedHash: String,
+  encodedData: String,
+  // Direct array-based distribution data
+  directDistribution: {
+    recipients: [String],
+    amounts: [String],
+    totalAmount: String
+  },
+  // Common fields
   dailyData: [{ 
     day: String,
     latestAttention: Number,
@@ -19,15 +29,17 @@ const WeekDistributionDetailSchema = new Schema({
     reqHash: String,
     resHash: String,
     distribution: [{
-      name: String,
       walletAddress: String,
       percentage: Number
     }]
   }],
-  dataHash: String,
-  signedHash: String,
-  encodedData: String,  // Added field to store the encoded distribution data
-  isBroadcasted: { type: Boolean, default: false }  // Added field to track broadcast status
+  isBroadcasted: { type: Boolean, default: false },
+  transactionReceipt: { type: String, default: "" },
+  distributionMethod: { 
+    type: String, 
+    enum: ['signature', 'direct', null],
+    default: null 
+  }
 });
 
 const WeeklyDistributionSchema = new Schema({

@@ -4,6 +4,8 @@
  * It processes attention data and calculates token distributions based on creator performance.
  */
 
+// @dev this will only work if we have the proper daily distribution data in the attention document
+// This API needs to be run every week to update the weekly distribution and should know the start date of the week
 const path = require("path");
 const fs = require("fs");
 const getScraper = require("../utils/scraper.js");
@@ -65,6 +67,12 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
 
     // Process each creator's data
     for (let creator of creators) {
+      // Skip if creator doesn't have a valid distributor contract address
+      if (!creator.distributorContractAddress) {
+        console.log(`No distributor contract address found for ${creator.creatorName}, skipping...`);
+        continue;
+      }
+
       // Get creator's attention data from database
       const attentionDoc = await Attention.findOne({
         creatorName: creator.creatorName,
@@ -83,7 +91,7 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
 
       // Initialize distributor contract to get configuration once per creator
       const distributorContract = new ethers.Contract(
-        "0x48FA057f993dfD8fEFF0A35eF0aa5Fb2CEd29721", // Using hardcoded address for now
+        creator.distributorContractAddress,
         contracts.creatorTokenSupporter.abi,
         provider
       );
@@ -168,7 +176,7 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
         continue;
       }
 
-      // Prepare distribution data for storage
+      // Prepare distribution data for both methods
       const recipients = [];
       const amounts = [];
       let totalAmount = 0;
@@ -186,27 +194,20 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
       // Convert total amount to wei format at the end and to string for MongoDB storage
       const totalAmountInWei = ethers.parseEther(totalAmount.toString());
 
+      // Prepare data for signature-based distribution
       const distributionData = { 
         recipients, 
         amounts, 
         totalAmount: totalAmountInWei.toString() 
       };
 
-      // Encode the distribution data in the same format as the contract's abi.decode
+      // Encode the distribution data for signature-based method
       const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
         ['tuple(address[],uint256[],uint256)'],
         [[distributionData.recipients, distributionData.amounts, distributionData.totalAmount]]
       );
 
-      console.log('Distribution Data:', {
-        recipients: distributionData.recipients,
-        amounts: distributionData.amounts,
-        totalAmount: distributionData.totalAmount
-      });
-      console.log('Encoded Data (for contract):', encodedData);
-      console.log('Encoded Data Length:', encodedData.length);
-
-      // Compute keccak256 hash of the distribution data (matching contract's scheme)
+      // Compute keccak256 hash of the distribution data
       const dataHash = ethers.keccak256(
         ethers.AbiCoder.defaultAbiCoder().encode(
           ['address[]', 'uint256[]', 'uint256'],
@@ -217,14 +218,22 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
       // Sign the hash with the wallet
       const signedHash = await wallet.signMessage(ethers.getBytes(dataHash));
 
-      // Create week entry object
+      // Create week entry object with both distribution methods
       const weekEntry = {
         weekStart,
         DistributionData: distributionData,
-        dailyData: dailyDataList,
         dataHash,
         signedHash,
-        encodedData
+        encodedData,
+        directDistribution: {
+          recipients,
+          amounts,
+          totalAmount: totalAmountInWei.toString()
+        },
+        dailyData: dailyDataList,
+        isBroadcasted: false,
+        transactionReceipt: "",
+        distributionMethod: null // Will be set when broadcasting
       };
 
       // Update or create weekly distribution record

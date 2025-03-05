@@ -12,8 +12,8 @@ const selfTokenVaultAbi = require(path.join(__dirname, "..", "web3", "abi", "Sel
 
 // Set up chain and provider configuration using environment variables
 const config = {
-  chainId: 57054,// process.env.CHAIN_ID || 1, // Default to mainnet
-  providerUrl: "https://sonic-testnet.drpc.org" // process.env.PROVIDER_URL || "http://localhost:8545",
+  chainId: 57054, // Default to mainnet
+  providerUrl: "https://sonic-testnet.drpc.org", // process.env.PROVIDER_URL || "https://sonic-testnet.drpc.org",
 };
 
 // Create an ethers provider
