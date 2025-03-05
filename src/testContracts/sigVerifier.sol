@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
+// @dev This contract is used to verify the signature of the distribution data
+// @dev This is a test contract and will be replaced with a production contract
 contract SignatureVerifier {
     using ECDSA for bytes32;
 
