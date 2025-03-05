@@ -176,11 +176,21 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
       // Convert distribution map to arrays for storage
       for (const [walletAddress, amount] of Object.entries(distributionMap)) {
         recipients.push(walletAddress);
-        amounts.push(amount);
+        // Convert amount to wei format and then to string for MongoDB storage
+        const amountInWei = ethers.parseEther(amount.toString());
+        amounts.push(amountInWei.toString());
+        // Add to total in regular number format
         totalAmount += amount;
       }
 
-      const distributionData = { recipients, amounts, totalAmount };
+      // Convert total amount to wei format at the end and to string for MongoDB storage
+      const totalAmountInWei = ethers.parseEther(totalAmount.toString());
+
+      const distributionData = { 
+        recipients, 
+        amounts, 
+        totalAmount: totalAmountInWei.toString() 
+      };
 
       // Generate unique identifiers for the distribution data
       const dataHash = computeHash(allAttentionEntries);

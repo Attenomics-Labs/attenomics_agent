@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 
 const DistributionDataSchema = new Schema({
   recipients: [String],
-  amounts: [Number],
-  totalAmount: Number
+  amounts: [String],
+  totalAmount: String
 });
 
 const WeekDistributionDetailSchema = new Schema({
