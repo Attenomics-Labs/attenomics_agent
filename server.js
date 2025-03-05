@@ -32,6 +32,10 @@ app.use('/nft', nftRoute);
 const weeklyDistributionRoute = require('./src/routes/weeklyDistributionRoute');
 app.use('/weekly-distribution', weeklyDistributionRoute);
 
+// Mount Cron route
+const cronRoute = require('./src/routes/cronRoute');
+app.use('/cron', cronRoute);
+
 // Basic test route
 app.get('/', (req, res) => {
   res.send('Hello, world!');
