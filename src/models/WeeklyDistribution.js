@@ -26,7 +26,8 @@ const WeekDistributionDetailSchema = new Schema({
   }],
   dataHash: String,
   signedHash: String,
-  encodedData: String  // Added field to store the encoded distribution data
+  encodedData: String,  // Added field to store the encoded distribution data
+  isBroadcasted: { type: Boolean, default: false }  // Added field to track broadcast status
 });
 
 const WeeklyDistributionSchema = new Schema({
