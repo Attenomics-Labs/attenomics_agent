@@ -1,7 +1,7 @@
-import getScraper from "../utils/scraper.js";
-import { handleResponse, handleError } from "../utils/responseHandler.js";
+const getScraper =   require("../utils/scraper.js");
+const { handleResponse, handleError } =  require("../utils/ResponseHandler.js");
 
-export const getTweetsAndReplies = async (res, user, maxTweets = 10) => {
+const getTweetsAndReplies = async (res, user, maxTweets = 10) => {
   try {
 
     if (!user) {
@@ -29,3 +29,5 @@ export const getTweetsAndReplies = async (res, user, maxTweets = 10) => {
     handleError(res, error);
   }
 };
+
+module.exports = { getTweetsAndReplies };

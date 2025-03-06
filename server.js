@@ -18,11 +18,12 @@ const creatorTokenRoute = require('./src/routes/creatorTokenRoute');
 const scraperRoute = require('./src/routes/scraperRoute');
 const attentionRoute = require('./src/routes/attentionRoute');
 const userRoute = require('./src/routes/userRoute');
-
+const cronRoute = require('./src/routes/cronRoute');
 app.use('/creator', creatorTokenRoute);
 app.use('/scraper', scraperRoute);
 app.use('/attention', attentionRoute);
 app.use('/user', userRoute);
+app.use('/cron', cronRoute);
 
 // Mount NFT routes (if present)
 const nftRoute = require('./src/routes/nftRoute');

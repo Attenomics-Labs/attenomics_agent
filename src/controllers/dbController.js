@@ -1,5 +1,5 @@
-import { MongoClient } from "mongodb";
 
+const MongoClient  = require("mongodb");
 const uri = "mongodb://localhost:27017"; // Update if necessary
 const dbName = "attenomics"; // Replace with your actual database name
 
@@ -7,13 +7,13 @@ const client = new MongoClient(uri);
 var db;
 
 
-export const initialiseDB = async () => {
+exports.initialiseDB = async () => {
     await client.connect();
     db = client.db(dbName)
 }
 
 
-export const fetchCreators = async () => {
+exports.fetchCreators = async () => {
     try {
         const collection = db.collection("creators");
         const creatorsData = await collection.findOne({});
@@ -26,7 +26,7 @@ export const fetchCreators = async () => {
 };
 
 
-export const fetchUsers = async () => {
+exports.fetchUsers = async () => {
     try {
         const collection = db.collection("users");
         const usersList = await collection.find().toArray();
@@ -40,7 +40,7 @@ export const fetchUsers = async () => {
 
 
 
-export const updateAttentionRecords = async (creatorsAttentionDist, unixTimestamp, requestHash, responseHash) => {
+exports.updateAttentionRecords = async (creatorsAttentionDist, unixTimestamp, requestHash, responseHash) => {
     try {
 
         const collection = db.collection('attention_records');
@@ -72,7 +72,7 @@ export const updateAttentionRecords = async (creatorsAttentionDist, unixTimestam
 } 
 
 
-export const updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp, requestHash, responseHash) => {
+exports.updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp, requestHash, responseHash) => {
     try {
         const collection = db.collection('user_percent_supp');
         const registeredUsers = await fetchUsers();
@@ -110,7 +110,7 @@ export const updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp
 }
 
 
-export const updateCreatorToCreatorDist = async (creatorsAttentionDist, unixTimestamp) => {
+exports.updateCreatorToCreatorDist = async (creatorsAttentionDist, unixTimestamp) => {
     try {
         const collection = db.collection('hourly_creator_to_creator_attention_records');
 
