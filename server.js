@@ -25,7 +25,6 @@ app.use('/attention', attentionRoute);
 app.use('/user', userRoute);
 app.use('/cron', cronRoute);
 
-// Mount NFT routes (if present)
 const nftRoute = require('./src/routes/nftRoute');
 app.use('/nft', nftRoute);
 
