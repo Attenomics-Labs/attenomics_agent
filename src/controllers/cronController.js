@@ -28,7 +28,7 @@ const runHourlyCron = async (req, res) => {
         // console.log("User Support Reponse: ", userSupportResponse);
         await updateUserPercentSupp(creator, userSupportResponse, unixTimestamp, userSupportResponse.requestHash, userSupportResponse.responseHash);
 
-        // console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse });
+        console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse });
         allCreatorTweetsAndReplies.push(creatorTweetsAndReplies);
       } catch (error) {
         console.error(`Error processing creator ${creator}:`, error);

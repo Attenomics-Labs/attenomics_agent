@@ -10,6 +10,7 @@ const axios = require("axios");
  * @param {number} totalPoints - The total points to distribute.
  * @returns {Promise<object>} - The evaluated JSON response.
  */
+
 exports.getEvalAttentionResponse = async (rawPosts, totalPoints = 100) => {
   try {
     // Extract the creator names from the posts.
@@ -37,6 +38,7 @@ exports.getEvalAttentionResponse = async (rawPosts, totalPoints = 100) => {
     throw error;
   }
 };
+};
 
 /**
  * Similarly, for user support evaluation:
@@ -59,7 +61,9 @@ exports.getEvalUserSupportResponse = async (rawPosts, totalPoints = 100) => {
       console.log("Sending payload for user support evaluation:", JSON.stringify(payloadData, null, 2));
       const response = await axios.post(process.env.JUDGE_URI_USER_SUPPORT, payloadData, {
         headers: { "Content-Type": "application/json" },
-        timeout: 120000
+        timeout: 120000,
+        validateStatus: (status) => status < 500, // Treat 4xx responses as valid
+
       });
       let data = response.data;
      
