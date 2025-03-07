@@ -10,7 +10,7 @@ const runHourlyCron = async (req, res) => {
     const creators = await fetchCreators();
     console.log("Creators:", creators);
 
-    let allCreatorTweetsAndReplies = [];
+    let allCreatorTweetsAndReplies = []
     const unixTimestamp = Math.floor(Date.now() / 1000);
 
     for (const creator of creators) {
@@ -19,11 +19,12 @@ const runHourlyCron = async (req, res) => {
         const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10);
         
         // Get user support distribution by calling the judge endpoint
+        console.log("User replies:", userReplies);
         const userSupportResponse = await getEvalUserSupportResponse(userReplies);
-        console.log("User support response:", userSupportResponse);
+        // console.log("User support response:", userSupportResponse);
 
-        // Update user support records using the evaluated response data
-        console.log("User Support Reponse: ", userSupportResponse);
+        // // Update user support records using the evaluated response data
+        // console.log("User Support Reponse: ", userSupportResponse);
         await updateUserPercentSupp(creator, userSupportResponse, unixTimestamp, userSupportResponse.requestHash, userSupportResponse.responseHash);
 
         console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse });

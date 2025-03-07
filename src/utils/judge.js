@@ -2,22 +2,35 @@ const axios = require("axios");
 
 /**
  * Calls the judge endpoint to evaluate attention distribution.
- * @param {any} allCreatorTweetsAndReplies - The data (or stringified version) of creators’ tweets.
- * @returns {Promise<object>} - The evaluated JSON response from the judge endpoint.
+ * Expects payloadData to be an object with:
+ *   - users: an array of creator names,
+ *   - posts: an array of post objects (each with a "text" field and others),
+ *   - total_points: number of points to distribute.
+ * @param {object} rawPosts - The raw array of tweet objects.
+ * @param {number} totalPoints - The total points to distribute.
+ * @returns {Promise<object>} - The evaluated JSON response.
  */
-exports.getEvalAttentionResponse = async (allCreatorTweetsAndReplies) => {
+exports.getEvalAttentionResponse = async (rawPosts, totalPoints = 100) => {
   try {
-    // For attention, total points is 100
-    const payload = {
-      posts: [JSON.stringify(allCreatorTweetsAndReplies, null, 2)],
-      total_points: 100
+    // Extract the creator names from the posts.
+    const users = rawPosts.map(post => post.username);
+    
+    // Construct the payload according to the expected structure.
+    // console.log("Users : " , users);
+    // console.log("Posts : " , posts);
+
+    const payloadData = {
+      users,      // e.g. [ "AttenomicsLabs", "DevSwayam", ... ]
+      posts: rawPosts,
+      total_points: totalPoints
     };
-    const response = await axios.post(process.env.JUDGE_URI, payload, {
-      headers: {
-        "Content-Type": "application/json"
-      },
+
+    console.log("Sending payload for attention evaluation:", JSON.stringify(payloadData, null, 2));
+    const response = await axios.post(process.env.JUDGE_URI, payloadData, {
+      headers: { "Content-Type": "application/json" },
       timeout: 120000 // 2 minutes timeout if needed
     });
+    console.log("Judge API raw response:", JSON.stringify(response.data, null, 2));
     return response.data;
   } catch (error) {
     console.error("Error in getEvalAttentionResponse:", error);
@@ -26,23 +39,23 @@ exports.getEvalAttentionResponse = async (allCreatorTweetsAndReplies) => {
 };
 
 /**
- * Calls the judge endpoint to evaluate user support distribution.
- * @param {any} userReplies - The list of user replies.
- * @returns {Promise<object>} - The evaluated JSON response from the judge endpoint.
+ * Similarly, for user support evaluation:
  */
-exports.getEvalUserSupportResponse = async (userReplies) => {
+exports.getEvalUserSupportResponse = async (rawPosts, totalPoints = 100) => {
   try {
-    // For user support, also use total points of 100
-    const payload = {
-      posts: [JSON.stringify(userReplies, null, 2)],
-      total_points: 100
+    const users = rawPosts.map(post => post.username);
+    const payloadData = {
+      users,
+      posts: rawPosts,
+      total_points: totalPoints
     };
-    const response = await axios.post(process.env.JUDGE_URI, payload, {
-      headers: {
-        "Content-Type": "application/json"
-      },
+
+    console.log("Sending payload for user support evaluation:", JSON.stringify(payloadData, null, 2));
+    const response = await axios.post(process.env.JUDGE_URI, payloadData, {
+      headers: { "Content-Type": "application/json" },
       timeout: 120000
     });
+    console.log("Judge API raw response:", JSON.stringify(response.data, null, 2));
     return response.data;
   } catch (error) {
     console.error("Error in getEvalUserSupportResponse:", error);
