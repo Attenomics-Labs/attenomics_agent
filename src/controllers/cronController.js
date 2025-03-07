@@ -21,6 +21,7 @@ const runHourlyCron = async (req, res) => {
 
         // Get user support distribution
         const userSupportPrompt = getEvalUserSupportPrompt(userReplies);
+        console.log(userSupportPrompt);
         const userSupportResponse = await getLLMResponse(userSupportPrompt, creators);
         console.log("User support response:", userSupportResponse);
 
@@ -36,6 +37,7 @@ const runHourlyCron = async (req, res) => {
 
     // Get attention distribution for all creators
     const attentionPrompt = getEvalAttentionPrompt(allCreatorTweetsAndReplies);
+    console.log(attentionPrompt);
     const { data: creatorsAttentionDist, requestHash, responseHash } = await getLLMResponse(attentionPrompt, creators);
     
     console.log({ "creatorsAttentionDist": creatorsAttentionDist });

@@ -27,7 +27,8 @@ const getTweetsAndReplies = async (res, user, maxTweets = 10) => {
     }
 
     const currentTime = Math.floor(Date.now() / 1000);
-    const oneHourAgo = currentTime - 24 * 3600;
+    const oneHourAgo = currentTime - (24 * 3600);
+    console.log("One hour ago:", oneHourAgo);
 
     // Log all tweets for debugging
     console.log('\nAll tweets/replies:');
