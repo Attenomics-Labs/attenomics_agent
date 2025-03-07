@@ -14,9 +14,11 @@ const runHourlyCron = async (req, res) => {
     const unixTimestamp = Math.floor(Date.now() / 1000);
 
     for (const creator of creators) {
-      const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10);
+      const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10); 
+
+      console.log({ creatorTweetsAndReplies, userReplies });
       const { data: userSuppDist, requestHash, responseHash } = await getLLMResponse(getEvalUserSupportPrompt(userReplies));
-      //change this one 
+      //change this one , the schema used here is : distribution daywise 
       await updateUserPercentSupp(creator, userSuppDist, unixTimestamp, requestHash, responseHash);
      // add distribute weekly attention here
      // 
