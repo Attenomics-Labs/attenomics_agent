@@ -1,5 +1,5 @@
 
-const MongoClient  = require("mongodb");
+const {MongoClient}  = require("mongodb");
 const uri = "mongodb://localhost:27017"; // Update if necessary
 const dbName = "attenomics"; // Replace with your actual database name
 
