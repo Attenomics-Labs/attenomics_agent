@@ -1,8 +1,8 @@
 const { handleResponse, handleError } = require("../utils/ResponseHandler.js");
 const { getTweetsAndReplies } = require("../controllers/tweetController.js");
-const { getLLMResponse } = require("../controllers/llmController.js");
-const { getEvalAttentionPrompt, getEvalUserSupportPrompt } = require("../utils/prompts.js");
-const { updateAttentionRecords, updateUserPercentSupp, updateCreatorToCreatorDist, fetchCreators } = require("../controllers/dbController.js");
+// Instead of getLLMResponse from llmController.js, we now use our judge functions:
+const { getEvalAttentionResponse, getEvalUserSupportResponse } = require("../utils/judge.js");
+const { fetchCreators, updateAttentionRecords, updateUserPercentSupp, updateCreatorToCreatorDist } = require("../controllers/dbController.js");
 
 const runHourlyCron = async (req, res) => {
   try {
@@ -17,29 +17,26 @@ const runHourlyCron = async (req, res) => {
       try {
         console.log("Processing creator:", creator);
         const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10);
-        // console.log("Creator data:", { creatorTweetsAndReplies, userReplies });
-
-        // Get user support distribution
-        const userSupportPrompt = getEvalUserSupportPrompt(userReplies);
-        console.log(userSupportPrompt);
-        const userSupportResponse = await getLLMResponse(userSupportPrompt, creators);
+        
+        // Get user support distribution by calling the judge endpoint
+        const userSupportResponse = await getEvalUserSupportResponse(userReplies);
         console.log("User support response:", userSupportResponse);
 
-        // Update user support records
-        await updateUserPercentSupp(creator, userSupportResponse.data, unixTimestamp, userSupportResponse.requestHash, userSupportResponse.responseHash);
+        // Update user support records using the evaluated response data
+        await updateUserPercentSupp(creator, userSupportResponse, unixTimestamp, userSupportResponse.requestHash, userSupportResponse.responseHash);
 
-        console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse.data });
+        console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse });
         allCreatorTweetsAndReplies.push(creatorTweetsAndReplies);
       } catch (error) {
         console.error(`Error processing creator ${creator}:`, error);
       }
     }
 
-    // Get attention distribution for all creators
-    const attentionPrompt = getEvalAttentionPrompt(allCreatorTweetsAndReplies);
-    console.log(attentionPrompt);
-    const { data: creatorsAttentionDist, requestHash, responseHash } = await getLLMResponse(attentionPrompt, creators);
-    
+    // Get attention distribution for all creators by calling the judge endpoint
+    const creatorsAttentionResponse = await getEvalAttentionResponse(allCreatorTweetsAndReplies);
+    const { requestHash, responseHash } = creatorsAttentionResponse; // if provided by judge API
+    const creatorsAttentionDist = creatorsAttentionResponse; // assuming the response data is the distribution
+
     console.log({ "creatorsAttentionDist": creatorsAttentionDist });
     
     // Update attention records
@@ -48,7 +45,7 @@ const runHourlyCron = async (req, res) => {
     // Update creator to creator distribution
     await updateCreatorToCreatorDist(creatorsAttentionDist, unixTimestamp);
     
-    console.log("updated creator to creator hourly record");
+    console.log("Updated creator to creator hourly record");
 
     handleResponse(res, creatorsAttentionDist, "Cron Job Ran");
   } catch (error) {
