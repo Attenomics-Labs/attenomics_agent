@@ -81,6 +81,8 @@ exports.updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp, req
     const registeredUsers = await exports.fetchUsers();
     const registeredUsernames = new Set(registeredUsers.map(user => user.username));
 
+    console.log("Im here in updateUserPercentSupp ", userSuppDist);
+
     for (const entry of userSuppDist) {
       const { username, percentBasedSupp } = entry;
       if (!registeredUsernames.has(username)) {

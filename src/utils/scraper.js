@@ -1,20 +1,15 @@
-import { Scraper } from "agent-twitter-client";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import fs from "fs/promises";
-import { Cookie } from "tough-cookie";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { Scraper } = require("agent-twitter-client");
+const fs = require("fs/promises");
+const { Cookie } = require("tough-cookie");
+const path = require("path");
 
 // cookie file path
-const COOKIE_FILE_PATH = join(__dirname, "cookies.json");
+const COOKIE_FILE_PATH = path.join(__dirname, "cookies.json");
 
 /**
  * Load cookies from file if they exist
  * @returns {Promise<Array|null>} The cookies array or null if file doesn't exist
  */
-
 const loadCookies = async () => {
   try {
     const cookieData = await fs.readFile(COOKIE_FILE_PATH, "utf-8");
@@ -36,7 +31,6 @@ const loadCookies = async () => {
  * Save cookies to file
  * @param {Array} cookies - The cookies to save
  */
-
 const saveCookies = async (cookies) => {
   try {
     // Convert Cookie instances to JSON-serializable objects
@@ -101,4 +95,4 @@ const getScraper = async () => {
   }
 };
 
-export default getScraper;
+module.exports = { getScraper };

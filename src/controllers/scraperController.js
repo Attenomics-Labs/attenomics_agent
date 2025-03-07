@@ -1,5 +1,5 @@
 // src/controllers/scraperController.js
-const getScraper = require('../utils/scraper.js');
+const {getScraper} = require('../utils/scraper.js');
 const { handleResponse, handleError } = require('../utils/ResponseHandler.js');
 
 const getTweets = async (req, res) => {

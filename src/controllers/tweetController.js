@@ -1,9 +1,9 @@
-const getScraper =   require("../utils/scraper.js");
-const { handleResponse, handleError } =  require("../utils/ResponseHandler.js");
+const {getScraper} = require("../utils/scraper.js");
+const { handleResponse, handleError } = require("../utils/ResponseHandler.js");
 
 const getTweetsAndReplies = async (res, user, maxTweets = 10) => {
   try {
-    console.log(`Fetching tweets and replies for user: ${user}`);
+    console.log(`\n=== Processing user: ${user} ===`);
     
     if (!user) {
       throw new Error("User is required");
@@ -20,40 +20,53 @@ const getTweetsAndReplies = async (res, user, maxTweets = 10) => {
       )) {
         tweets.push(tweet);
       }
-      console.log(`Successfully fetched ${tweets.length} tweets for user: ${user}`);
+      console.log(`Total tweets/replies fetched: ${tweets.length}`);
     } catch (scrapeError) {
       console.error(`Error fetching tweets for user ${user}:`, scrapeError);
-      // Return empty arrays instead of throwing to allow the process to continue
       return { creatorTweetsAndReplies: [], userReplies: [] };
     }
 
     const currentTime = Math.floor(Date.now() / 1000);
-    const oneHourAgo = currentTime - 3600;
+    const oneHourAgo = currentTime - 24 * 3600;
+
+    // Log all tweets for debugging
+    console.log('\nAll tweets/replies:');
+    tweets.forEach(tweet => {
+      console.log(`- ID: ${tweet.id}`);
+      console.log(`  Username: ${tweet.username}`);
+      console.log(`  Is Reply: ${tweet.isReply}`);
+      console.log(`  Timestamp: ${tweet.timestamp}`);
+      console.log(`  Text: ${tweet.text.substring(0, 50)}...`);
+    });
 
     const creatorTweetsAndReplies = tweets.filter(tweet => {
       const isRecent = tweet.timestamp >= oneHourAgo;
       const isCreator = tweet.username === user;
-      console.log(`Tweet ${tweet.id}: timestamp=${tweet.timestamp}, username=${tweet.username}, isRecent=${isRecent}, isCreator=${isCreator}`);
       return isRecent && isCreator;
     });
 
     const userReplies = tweets.filter(tweet => {
       const isRecent = tweet.timestamp >= oneHourAgo;
-      const isReply = tweet.username !== user;
-      console.log(`Reply ${tweet.id}: timestamp=${tweet.timestamp}, username=${tweet.username}, isRecent=${isRecent}, isReply=${isReply}`);
+      const isReply = tweet.isReply && tweet.username !== user;
       return isRecent && isReply;
     });
 
-    console.log(`Filtered results for ${user}:`, {
-      totalTweets: tweets.length,
-      creatorTweets: creatorTweetsAndReplies.length,
-      userReplies: userReplies.length
-    });
+    console.log('\nFiltered Results:');
+    console.log(`Creator tweets in last hour: ${creatorTweetsAndReplies.length}`);
+    console.log(`User replies in last hour: ${userReplies.length}`);
+
+    if (userReplies.length > 0) {
+      console.log('\nUser Replies Details:');
+      userReplies.forEach(reply => {
+        console.log(`- From: ${reply.username}`);
+        console.log(`  To: ${reply.replyToUsername || user}`);
+        console.log(`  Text: ${reply.text.substring(0, 50)}...`);
+      });
+    }
 
     return { creatorTweetsAndReplies, userReplies };
   } catch (error) {
     console.error(`Error in getTweetsAndReplies for user ${user}:`, error);
-    // Return empty arrays instead of throwing to allow the process to continue
     return { creatorTweetsAndReplies: [], userReplies: [] };
   }
 };

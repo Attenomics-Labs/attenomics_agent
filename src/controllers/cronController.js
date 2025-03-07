@@ -17,7 +17,7 @@ const runHourlyCron = async (req, res) => {
       try {
         console.log("Processing creator:", creator);
         const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10);
-        console.log("Creator data:", { creatorTweetsAndReplies, userReplies });
+        // console.log("Creator data:", { creatorTweetsAndReplies, userReplies });
 
         // Get user support distribution
         const userSupportPrompt = getEvalUserSupportPrompt(userReplies);

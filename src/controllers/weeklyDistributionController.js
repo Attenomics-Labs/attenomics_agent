@@ -6,7 +6,7 @@
 
 const path = require("path");
 const fs = require("fs");
-const getScraper = require("../utils/scraper.js");
+const {getScraper} = require("../utils/scraper.js");
 const WeeklyDistribution = require("../models/WeeklyDistribution");
 const Attention = require("../models/Attention");
 const Creator = require("../models/Creator");

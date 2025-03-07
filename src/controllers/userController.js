@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const getScraper = require("../utils/scraper.js");
+const {getScraper} = require("../utils/scraper.js");
 const { MongoClient } = require("mongodb");
 
 // Paths to the JSON files
