@@ -48,9 +48,17 @@ exports.fetchUsers = async () => {
     return [];
   }
 };
-
 exports.updateAttentionRecords = async (creatorsAttentionDist, unixTimestamp, requestHash, responseHash) => {
   try {
+    // Convert creatorsAttentionDist to an array if it's not already one.
+    if (!Array.isArray(creatorsAttentionDist)) {
+      creatorsAttentionDist = Object.entries(creatorsAttentionDist).map(([username, attention]) => ({
+        username,
+        attention
+      }));
+      console.log("Converted creatorsAttentionDist to array:", creatorsAttentionDist);
+    }
+
     const collection = db.collection("attentions");
     for (const entry of creatorsAttentionDist) {
       const { username, attention } = entry;
@@ -81,14 +89,27 @@ exports.updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp, req
     const registeredUsers = await exports.fetchUsers();
     const registeredUsernames = new Set(registeredUsers.map(user => user.username));
 
-    console.log("Im here in updateUserPercentSupp ", userSuppDist);
+    console.log("In updateUserPercentSupp, received userSuppDist:", userSuppDist);
+    console.log("Type of userSuppDist:", typeof userSuppDist);
+
+    // Convert userSuppDist to an array if it isn't one already.
+    if (!Array.isArray(userSuppDist)) {
+      userSuppDist = Object.entries(userSuppDist).map(([key, value]) => ({
+        username: key,
+        percentBasedSupp: value
+      }));
+      console.log("Converted userSuppDist to array:", userSuppDist);
+    }
 
     for (const entry of userSuppDist) {
       const { username, percentBasedSupp } = entry;
+      
+      // Check if the username is registered. If not, log and skip.
       if (!registeredUsernames.has(username)) {
         console.log(`User ${username} is not registered. Skipping update.`);
         continue;
       }
+      
       await collection.updateOne(
         { 
           username,
@@ -111,6 +132,7 @@ exports.updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp, req
     console.error("Error updating user percent supp:", err);
   }
 };
+
 
 exports.updateCreatorToCreatorDist = async (creatorsAttentionDist, unixTimestamp) => {
   try {

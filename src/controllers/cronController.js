@@ -23,6 +23,7 @@ const runHourlyCron = async (req, res) => {
         console.log("User support response:", userSupportResponse);
 
         // Update user support records using the evaluated response data
+        console.log("User Support Reponse: ", userSupportResponse);
         await updateUserPercentSupp(creator, userSupportResponse, unixTimestamp, userSupportResponse.requestHash, userSupportResponse.responseHash);
 
         console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse });
