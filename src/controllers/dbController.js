@@ -19,10 +19,19 @@ let db;
 
 exports.fetchCreators = async () => {
   try {
-    const collection = db.collection("creators");
+    const collection = db.collection("creatorlists");
     const creatorsData = await collection.findOne({});
+
     console.log("Creators data:", creatorsData);
-    return creatorsData?.creators || [];
+    
+    // Log the full document
+    console.log("Full creators document:", JSON.stringify(creatorsData, null, 2));
+    
+    // Log just the creator names array
+    console.log("Creator names array:", creatorsData?.creatorNames || []);
+    
+    // Return the creator names array
+    return creatorsData?.creatorNames || [];
   } catch (err) {
     console.error("Error fetching creators:", err);
     return [];
@@ -42,7 +51,7 @@ exports.fetchUsers = async () => {
 
 exports.updateAttentionRecords = async (creatorsAttentionDist, unixTimestamp, requestHash, responseHash) => {
   try {
-    const collection = db.collection("attention_records");
+    const collection = db.collection("attentions");
     for (const entry of creatorsAttentionDist) {
       const { username, attention } = entry;
       await collection.updateOne(
@@ -103,12 +112,57 @@ exports.updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp, req
 
 exports.updateCreatorToCreatorDist = async (creatorsAttentionDist, unixTimestamp) => {
   try {
-    const collection = db.collection("hourly_creator_to_creator_attention_records");
+    const collection = db.collection("attentions");
     await collection.insertOne({
       unixTimestamp,
       distribution: creatorsAttentionDist
     });
   } catch (err) {
     console.error("Error updating creator to creator dist:", err);
+  }
+};
+
+const updateCreatorHourlyRecord = async (creatorName, unixTimestamp, latestAttention, reqHash, resHash) => {
+  try {
+    console.log(`Updating hourly record for creator: ${creatorName}`);
+    
+    // Find the existing document for this creator
+    const existingRecord = await CreatorHourlyRecord.findOne({ creatorName });
+    
+    if (existingRecord) {
+      // Update existing document by pushing new hourly record
+      const updatedRecord = await CreatorHourlyRecord.findOneAndUpdate(
+        { creatorName },
+        {
+          $push: {
+            hourly: {
+              unixTimestamp,
+              latestAttention,
+              reqHash,
+              resHash
+            }
+          }
+        },
+        { new: true }
+      );
+      console.log(`Updated existing record for ${creatorName}`);
+      return updatedRecord;
+    } else {
+      // Create new document if it doesn't exist
+      const newRecord = await CreatorHourlyRecord.create({
+        creatorName,
+        hourly: [{
+          unixTimestamp,
+          latestAttention,
+          reqHash,
+          resHash
+        }]
+      });
+      console.log(`Created new record for ${creatorName}`);
+      return newRecord;
+    }
+  } catch (error) {
+    console.error(`Error updating hourly record for ${creatorName}:`, error);
+    throw error;
   }
 };

@@ -19,11 +19,13 @@ const scraperRoute = require('./src/routes/scraperRoute');
 const attentionRoute = require('./src/routes/attentionRoute');
 const userRoute = require('./src/routes/userRoute');
 const cronRoute = require('./src/routes/cronRoute');
+const creatorRoute = require("./src/routes/creatorRoute");
 app.use('/creator', creatorTokenRoute);
 app.use('/scraper', scraperRoute);
 app.use('/attention', attentionRoute);
 app.use('/user', userRoute);
 app.use('/cron', cronRoute);
+app.use("/creator", creatorRoute);
 
 const nftRoute = require('./src/routes/nftRoute');
 app.use('/nft', nftRoute);
@@ -31,6 +33,10 @@ app.use('/nft', nftRoute);
 // Mount Weekly Distribution route
 const weeklyDistributionRoute = require('./src/routes/weeklyDistributionRoute');
 app.use('/weekly-distribution', weeklyDistributionRoute);
+
+// Mount Creator List route
+const creatorListRoute = require('./src/routes/creatorListRoute');
+app.use('/creator-list', creatorListRoute);
 
 // Mount Cron route
 // const cronRoute = require('./src/routes/cronRoute');

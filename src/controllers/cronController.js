@@ -6,30 +6,44 @@ const { updateAttentionRecords, updateUserPercentSupp, updateCreatorToCreatorDis
 
 const runHourlyCron = async (req, res) => {
   try {
+    console.log("Running hourly cron job...");
     const creators = await fetchCreators();
-
-    console.log(creators);
+    console.log("Creators:", creators);
 
     let allCreatorTweetsAndReplies = [];
     const unixTimestamp = Math.floor(Date.now() / 1000);
 
     for (const creator of creators) {
-      const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10); 
+      try {
+        console.log("Processing creator:", creator);
+        const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10);
+        console.log("Creator data:", { creatorTweetsAndReplies, userReplies });
 
-      console.log({ creatorTweetsAndReplies, userReplies });
-      const { data: userSuppDist, requestHash, responseHash } = await getLLMResponse(getEvalUserSupportPrompt(userReplies));
-      //change this one , the schema used here is : distribution daywise 
-      await updateUserPercentSupp(creator, userSuppDist, unixTimestamp, requestHash, responseHash);
-     // add distribute weekly attention here
-     // 
-      console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist });
-      allCreatorTweetsAndReplies.push(creatorTweetsAndReplies);
+        // Get user support distribution
+        const userSupportPrompt = getEvalUserSupportPrompt(userReplies);
+        const userSupportResponse = await getLLMResponse(userSupportPrompt, creators);
+        console.log("User support response:", userSupportResponse);
+
+        // Update user support records
+        await updateUserPercentSupp(creator, userSupportResponse.data, unixTimestamp, userSupportResponse.requestHash, userSupportResponse.responseHash);
+
+        console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse.data });
+        allCreatorTweetsAndReplies.push(creatorTweetsAndReplies);
+      } catch (error) {
+        console.error(`Error processing creator ${creator}:`, error);
+      }
     }
 
-    const { data: creatorsAttentionDist, requestHash, responseHash } = await getLLMResponse(getEvalAttentionPrompt(allCreatorTweetsAndReplies));
+    // Get attention distribution for all creators
+    const attentionPrompt = getEvalAttentionPrompt(allCreatorTweetsAndReplies);
+    const { data: creatorsAttentionDist, requestHash, responseHash } = await getLLMResponse(attentionPrompt, creators);
     
     console.log({ "creatorsAttentionDist": creatorsAttentionDist });
+    
+    // Update attention records
     await updateAttentionRecords(creatorsAttentionDist, unixTimestamp, requestHash, responseHash);
+    
+    // Update creator to creator distribution
     await updateCreatorToCreatorDist(creatorsAttentionDist, unixTimestamp);
     
     console.log("updated creator to creator hourly record");
