@@ -38,7 +38,7 @@ exports.getEvalAttentionResponse = async (rawPosts, totalPoints = 100) => {
     throw error;
   }
 };
-};
+
 
 /**
  * Similarly, for user support evaluation:
