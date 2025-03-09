@@ -20,8 +20,9 @@ const runHourlyCron = async (req, res) => {
         
         // Get user support distribution by calling the judge endpoint
         console.log("User replies:", userReplies);
+        
         const userSupportResponse = await getEvalUserSupportResponse(userReplies);
-        // console.log("User support response:", userSupportResponse);
+        console.log("User support response:", userSupportResponse);
 
         // // Update user support records using the evaluated response data
         // console.log("User Support Reponse: ", userSupportResponse);
@@ -36,6 +37,7 @@ const runHourlyCron = async (req, res) => {
 
     // Get attention distribution for all creators by calling the judge endpoint
     const creatorsAttentionResponse = await getEvalAttentionResponse(allCreatorTweetsAndReplies);
+    console.log("Creators attention response:", creatorsAttentionResponse);
     const { requestHash, responseHash } = creatorsAttentionResponse; // if provided by judge API
     const creatorsAttentionDist = creatorsAttentionResponse; // assuming the response data is the distribution
 
