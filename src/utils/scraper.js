@@ -31,7 +31,7 @@ const loadCookies = async () => {
  * Save cookies to file
  * @param {Array} cookies - The cookies to save
  */
-const saveCookies = async (cookies) => {
+exports.saveCookies = async (cookies) => {
   try {
     // Convert Cookie instances to JSON-serializable objects
     const cookiesJson = cookies.map((cookie) => cookie.toJSON());
@@ -47,7 +47,7 @@ const saveCookies = async (cookies) => {
  * - First tries to use cached cookies
  * - If cookies don't exist or are invalid, logs in with credentials and caches new cookies
  */
-const getScraper = async () => {
+exports.getScraper = async () => {
   const scraper = new Scraper();
 
   // Try to load existing cookies
@@ -94,5 +94,3 @@ const getScraper = async () => {
     throw new Error("Failed to initialize Twitter scraper");
   }
 };
-
-module.exports = { getScraper };

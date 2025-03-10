@@ -20,13 +20,14 @@ const attentionRoute = require('./src/routes/attentionRoute');
 const userRoute = require('./src/routes/userRoute');
 const cronRoute = require('./src/routes/cronRoute');
 const creatorRoute = require("./src/routes/creatorRoute");
+const dailyDistributionRoute = require("./src/routes/dailyDistributionRoute");
 app.use('/creator', creatorTokenRoute);
 app.use('/scraper', scraperRoute);
 app.use('/attention', attentionRoute);
 app.use('/user', userRoute);
 app.use('/cron', cronRoute);
 app.use("/creator", creatorRoute);
-
+app.use("/daily-distribution", dailyDistributionRoute);
 const nftRoute = require('./src/routes/nftRoute');
 app.use('/nft', nftRoute);
 

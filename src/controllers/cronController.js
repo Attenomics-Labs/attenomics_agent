@@ -1,60 +1,57 @@
 const { handleResponse, handleError } = require("../utils/ResponseHandler.js");
 const { getTweetsAndReplies } = require("../controllers/tweetController.js");
-// Instead of getLLMResponse from llmController.js, we now use our judge functions:
-const { getEvalAttentionResponse, getEvalUserSupportResponse } = require("../utils/judge.js");
-const { fetchCreators, updateAttentionRecords, updateUserPercentSupp, updateCreatorToCreatorDist } = require("../controllers/dbController.js");
+const { getLLMResponse } = require("../controllers/llmController.js");
+const { getEvalAttentionPrompt, getEvalUserSupportPrompt } = require("../utils/prompts.js");
+const { 
+  fetchCreators, 
+  updateAttentionRecords, 
+  updateUserPercentSupp, 
+  updateCreatorToCreatorDist,
+  updateCreatorTweetMetrics
+} = require("../controllers/dbController.js");
 
-const runHourlyCron = async (req, res) => {
+exports.runHourlyCron = async (req, res) => {
   try {
-    console.log("Running hourly cron job...");
     const creators = await fetchCreators();
-    console.log("Creators:", creators);
-
-    let allCreatorTweetsAndReplies = []
+    let allCreatorTweetsAndReplies = [];
     const unixTimestamp = Math.floor(Date.now() / 1000);
 
     for (const creator of creators) {
-      try {
-        console.log("Processing creator:", creator);
-        const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10);
-        
-        // Get user support distribution by calling the judge endpoint
-        console.log("User replies:", userReplies);
-        
-        const userSupportResponse = await getEvalUserSupportResponse(userReplies);
-        console.log("User support response:", userSupportResponse);
+      const { creatorTweetsAndReplies, userReplies } = await getTweetsAndReplies(res, creator, 10);
 
-        // // Update user support records using the evaluated response data
-        // console.log("User Support Reponse: ", userSupportResponse);
-        await updateUserPercentSupp(creator, userSupportResponse, unixTimestamp, userSupportResponse.requestHash, userSupportResponse.responseHash);
+      // Extract tweet metrics: for each tweet, record tweet id and key metrics.
+      const tweetMetrics = creatorTweetsAndReplies.map((tweet) => ({
+        tweetId: tweet.id,
+        likes: tweet.likes || 0,
+        retweets: tweet.retweets || 0,
+        replies: tweet.replies || 0,
+        views: tweet.views || 0,
+        timestamp: tweet.timestamp,
+      }));
+      await updateCreatorTweetMetrics(creator, tweetMetrics);
 
-        console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist: userSupportResponse });
-        allCreatorTweetsAndReplies.push(creatorTweetsAndReplies);
-      } catch (error) {
-        console.error(`Error processing creator ${creator}:`, error);
-      }
+      // Get user support distribution from the LLM.
+      const { data: userSuppDist, requestHash, responseHash } = await getLLMResponse(
+        getEvalUserSupportPrompt(userReplies)
+      );
+      await updateUserPercentSupp(creator, userSuppDist, unixTimestamp, requestHash, responseHash);
+
+     // console.log({ creator, creatorTweetsAndReplies, userReplies, userSuppDist });
+      allCreatorTweetsAndReplies.push(creatorTweetsAndReplies);
     }
 
-    // Get attention distribution for all creators by calling the judge endpoint
-    const creatorsAttentionResponse = await getEvalAttentionResponse(allCreatorTweetsAndReplies);
-    console.log("Creators attention response:", creatorsAttentionResponse);
-    const { requestHash, responseHash } = creatorsAttentionResponse; // if provided by judge API
-    const creatorsAttentionDist = creatorsAttentionResponse; // assuming the response data is the distribution
-
-    console.log({ "creatorsAttentionDist": creatorsAttentionDist });
-    
-    // Update attention records
+    // Get overall creator attention distribution from the LLM.
+    const { data: creatorsAttentionDist, requestHash, responseHash } = await getLLMResponse(
+      getEvalAttentionPrompt(allCreatorTweetsAndReplies)
+    );
+    console.log({ creatorsAttentionDist });
     await updateAttentionRecords(creatorsAttentionDist, unixTimestamp, requestHash, responseHash);
-    
-    // Update creator to creator distribution
     await updateCreatorToCreatorDist(creatorsAttentionDist, unixTimestamp);
-    
-    console.log("Updated creator to creator hourly record");
+    console.log("Updated creator-to-creator six-hour record");
 
-    handleResponse(res, creatorsAttentionDist, "Cron Job Ran");
+    res.status(200).json({ message: "Success" });
   } catch (error) {
-    handleError(res, error);
+    console.error("Error in six-hour cron job:", error);
+    return handleError(res, error);
   }
 };
-
-module.exports = { runHourlyCron };

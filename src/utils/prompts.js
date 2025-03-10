@@ -1,5 +1,5 @@
 exports.getEvalAttentionPrompt = (allCreatorTweetsAndReplies) => {
-    return `Hey I am sending you a list which has sublists and one sublist represents a creators collection of tweets he/she has made in past one hour. One item in the sublist represents a tweet and has attributes like bookmarkCount, likes, replies, retweets, views. You have to distribute a pool of 100 attention points among each creator based on the the parameters I mentioned and return a list like
+    return `Hey I am sending you a list which has sublists and one sublist represents a creators collection of tweets he/she has made in past 6 hours. One item in the sublist represents a tweet and has attributes like bookmarkCount, likes, replies, retweets, views. You have to distribute a pool of 600 attention points among all the creators the total sum of all the attention points should amount to 600. Based on the the parameters I mentioned and return a list like
                                 [
                                     { 
                                         "username":<creator-uname>, 
@@ -13,7 +13,7 @@ exports.getEvalAttentionPrompt = (allCreatorTweetsAndReplies) => {
 
 
 exports.getEvalUserSupportPrompt = (userReplies) => {
-    return `Hey i am sending you a list in which each item is a reply from a follower/user to a creator on a social media platform. This list contains all the replies a creator has gotten in the past hour. And each reply consists of the username of the user that the reply is from. I want you to assign percentage based support to each user who has replied based on the factors that are in the reply object make sure that the sum of all the percentage based support you allot to the users should amount to 100 as it is a percentage based support. Thus return the response in this format
+    return `Hey i am sending you a list in which each item is a reply from a follower/user to a creator on a social media platform. This list contains all the replies a creator has gotten in the past 6 hours. And each reply consists of the username of the user that the reply is from. I want you to assign percentage based support to each user who has replied based on the factors that are in the reply object make sure that the sum of all the percentage based support you allot to the users should amount to 100 as it is a percentage based support. Thus return the response in this format
 [
 	{
 		"username": <users username>

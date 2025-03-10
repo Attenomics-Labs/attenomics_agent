@@ -10,17 +10,10 @@ const {getScraper} = require("../utils/scraper.js");
 const WeeklyDistribution = require("../models/WeeklyDistribution");
 const Attention = require("../models/Attention");
 const Creator = require("../models/Creator");
-const crypto = require("crypto");
+const crypto = require("crypto")
 const { contracts, provider, wallet } = require("../config/web3/contractConfig");
 const { ethers } = require("ethers");
 
-/**
- * Helper function to compute SHA-256 hash of data
- * Used for generating unique identifiers for distribution data
- */
-const computeHash = (data) => {
-  return crypto.createHash("sha256").update(JSON.stringify(data)).digest("hex");
-};
 
 /**
  * Validates the input parameters for weekly distribution
@@ -260,8 +253,8 @@ exports.createWeeklyDistributionForAll = async (req, res) => {
         // Process daily data with correct parameters
         const { distributionMap, dailyDataList, allAttentionEntries } = processDailyData(
           days,
-          startDate,
-          endDate,
+          startDate, // it shoould be start hour of the day 
+          endDate, // it should be  end hour of the day
           dailyDripAmountToDistribute
         );
 

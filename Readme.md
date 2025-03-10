@@ -133,14 +133,14 @@ LLM_AUTH_TOKEN=your_llm_auth_token
 #### Register a New Creator Token
 - **Endpoint**: `POST /creator/post-creator-token/`
 - **Request Body**:
-  ```json
-  {
+```json
+{
     "creatorName": "johndoe",
     "creatorTokenAddress": "0x1234567890abcdef1234567890abcdef12345678",
     "distributorContractAddress": "0xabcdef1234567890abcdef1234567890abcdef12",
     "bondingCurveAddress": "0x7890abcdef1234567890abcdef1234567890abcdef",
     "selfTokenVaultAddress": "0xdef1234567890abcdef1234567890abcdef123456",
-    "socialDataUser": {
+  "socialDataUser": {
       "telegramGroup": "@johndoe_community",
       "otherSocialProfiles": "instagram.com/johndoe"
     },
@@ -268,8 +268,8 @@ LLM_AUTH_TOKEN=your_llm_auth_token
 #### Create a New NFT
 - **Endpoint**: `POST /nft/`
 - **Request Body**:
-  ```json
-  {
+```json
+{
     "creatorName": "johndoe",
     "data": {
       "creatorWalletAddress": "0x2345678901abcdef2345678901abcdef23456789",
@@ -330,8 +330,8 @@ LLM_AUTH_TOKEN=your_llm_auth_token
 #### Get NFT by ID
 - **Endpoint**: `GET /nft/612c1d4a0e1e3a001fd9c4a3`
 - **Response (Success - 200)**:
-  ```json
-  {
+```json
+{
     "data": {
       "_id": "612c1d4a0e1e3a001fd9c4a3",
       "creatorName": "johndoe",
@@ -360,12 +360,12 @@ LLM_AUTH_TOKEN=your_llm_auth_token
 #### Get Tweets for a User
 - **Endpoint**: `POST /scraper/tweets`
 - **Request Body**:
-  ```json
-  {
-    "user": "elonmusk",
-    "maxTweets": 5
-  }
-  ```
+```json
+{
+  "user": "elonmusk",
+  "maxTweets": 5
+}
+```
 - **Response (Success - 200)**:
   ```json
   {
@@ -405,11 +405,11 @@ LLM_AUTH_TOKEN=your_llm_auth_token
   }
   ```
 - **Response (Success - 201)**:
-  ```json
-  {
+```json
+{
     "message": "Weekly Distribution created for all creators",
-    "data": [
-      {
+  "data": [
+    {
         "_id": "612c1d4a0e1e3a001fd9c4a4",
         "creatorName": "johndoe",
         "tokenContract": "0x1234567890abcdef1234567890abcdef12345678",
@@ -459,21 +459,21 @@ LLM_AUTH_TOKEN=your_llm_auth_token
         "createdAt": "2023-08-29T18:30:18.432Z",
         "updatedAt": "2023-08-29T18:30:18.432Z"
       }
-    ]
-  }
-  ```
+  ]
+}
+```
 
 #### Broadcast Weekly Distributions
 - **Endpoint**: `POST /weekly-distribution/broadcast`
 - **Request Body**:
-  ```json
-  {
+```json
+{
     "method": "signature"
-  }
-  ```
+}
+```
 - **Response (Success - 200)**:
-  ```json
-  {
+```json
+{
     "message": "Distribution process completed",
     "results": [
       {

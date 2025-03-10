@@ -9,7 +9,7 @@ let db;
 (async () => {
   try {
     await client.connect();
-    db = client.db(); // No need to pass a dbName—this uses the default from the URI.
+    db = client.db(); // Uses the default DB from the URI.
     console.log("Database connected using default database from URI");
   } catch (err) {
     console.error("Error connecting to database:", err);
@@ -17,20 +17,16 @@ let db;
   }
 })();
 
+/**
+ * Fetch creators from the "creatorlists" collection.
+ */
 exports.fetchCreators = async () => {
   try {
     const collection = db.collection("creatorlists");
     const creatorsData = await collection.findOne({});
-
     console.log("Creators data:", creatorsData);
-    
-    // Log the full document
     console.log("Full creators document:", JSON.stringify(creatorsData, null, 2));
-    
-    // Log just the creator names array
     console.log("Creator names array:", creatorsData?.creatorNames || []);
-    
-    // Return the creator names array
     return creatorsData?.creatorNames || [];
   } catch (err) {
     console.error("Error fetching creators:", err);
@@ -38,7 +34,10 @@ exports.fetchCreators = async () => {
   }
 };
 
-exports.fetchUsers = async () => {
+/**
+ * Fetch registered users from the "users" collection.
+ */
+const fetchUsers = async () => {
   try {
     const collection = db.collection("users");
     const usersList = await collection.find().toArray();
@@ -48,145 +47,144 @@ exports.fetchUsers = async () => {
     return [];
   }
 };
+
+/**
+ * Update the creator's attention record using a six‐hour time window.
+ */
 exports.updateAttentionRecords = async (creatorsAttentionDist, unixTimestamp, requestHash, responseHash) => {
   try {
-    // Convert creatorsAttentionDist to an array if it's not already one.
-    if (!Array.isArray(creatorsAttentionDist)) {
-      creatorsAttentionDist = Object.entries(creatorsAttentionDist).map(([username, attention]) => ({
-        username,
-        attention
-      }));
-      console.log("Converted creatorsAttentionDist to array:", creatorsAttentionDist);
-    }
-
     const collection = db.collection("attentions");
     for (const entry of creatorsAttentionDist) {
       const { username, attention } = entry;
+      // Fetch the existing document for this creator.
+      const existingDoc = await collection.findOne({ creatorName: username });
+      let newTotal = attention;
+      if (existingDoc && typeof existingDoc.totalAttention === "number") {
+        newTotal = existingDoc.totalAttention + attention;
+      }
+      // Update (or upsert) the document by pushing a new six-hour record
       await collection.updateOne(
         { creatorName: username },
-        { 
-          $push: { 
-            hourly: { 
-              unixTimestamp, 
-              latestAttention: attention, 
-              reqHash: requestHash, 
-              resHash: responseHash
-            } 
-          } 
+        {
+          $push: {
+            sixHours: {
+              unixTimestamp,
+              latestAttention: attention,
+              reqHash: requestHash,
+              resHash: responseHash,
+            },
+          },
+          $set: { totalAttention: newTotal },
         },
         { upsert: true }
       );
       console.log(`Updated attention record for ${username}`);
     }
   } catch (err) {
-    console.error("Error updating records:", err);
+    console.error("Error updating attention records:", err);
   }
 };
 
+/**
+ * Update user percentage support for a creator.
+ * This function uses the "user_percent_supp" collection only.
+ * It filters the provided userSuppDist (which should be an array) and then pushes a new six-hour record if the filtered distribution is nonempty.
+ */
 exports.updateUserPercentSupp = async (creator, userSuppDist, unixTimestamp, requestHash, responseHash) => {
   try {
     const collection = db.collection("user_percent_supp");
-    const registeredUsers = await exports.fetchUsers();
-    const registeredUsernames = new Set(registeredUsers.map(user => user.username));
+    const registeredUsers = await fetchUsers();
+    const registeredUsernames = new Set(registeredUsers.map((user) => user.username));
 
-    console.log("In updateUserPercentSupp, received userSuppDist:", userSuppDist);
+    console.log("Received userSuppDist:", JSON.stringify(userSuppDist, null, 2));
     console.log("Type of userSuppDist:", typeof userSuppDist);
 
-    // Convert userSuppDist to an array if it isn't one already.
-    if (!Array.isArray(userSuppDist)) {
-      userSuppDist = Object.entries(userSuppDist).map(([key, value]) => ({
-        username: key,
-        percentBasedSupp: value
-      }));
-      console.log("Converted userSuppDist to array:", userSuppDist);
+    let filteredUserSuppDist = [];
+    if (Array.isArray(userSuppDist)) {
+      // Process each entry – if the entry has a "users" array, extract the objects from it.
+      filteredUserSuppDist = userSuppDist.flatMap((entry) => {
+        console.log("Processing user entry:", entry);
+        if (entry.users && Array.isArray(entry.users)) {
+          return entry.users
+            .filter((u) => u && u.username && registeredUsernames.has(u.username))
+            .map((u) => ({
+              username: u.username,
+              percentBasedSupp: u.percentBasedSupp,
+            }));
+        } else if (entry.username) {
+          return registeredUsernames.has(entry.username)
+            ? [{ username: entry.username, percentBasedSupp: entry.percentBasedSupp }]
+            : [];
+        } else {
+          return [];
+        }
+      });
+    } else {
+      console.log("userSuppDist is not an array.");
+    }
+    
+    console.log("Filtered userSuppDist:", JSON.stringify(filteredUserSuppDist, null, 2));
+    if (filteredUserSuppDist.length === 0) {
+      console.log(`Filtered userSuppDist is empty for creator ${creator}. Skipping update.`);
+      return;
     }
 
-    for (const entry of userSuppDist) {
-      const { username, percentBasedSupp } = entry;
-      
-      // Check if the username is registered. If not, log and skip.
-      if (!registeredUsernames.has(username)) {
-        console.log(`User ${username} is not registered. Skipping update.`);
-        continue;
-      }
-      
-      await collection.updateOne(
-        { 
-          username,
-          "hourly.timestamp": unixTimestamp
+    // Push the new record into the "sixHours" array field.
+    await collection.updateOne(
+      { creatorName: creator },
+      {
+        $push: {
+          sixHours: {
+            unixTimestamp,
+            distribution: filteredUserSuppDist,
+            reqHash: requestHash,
+            resHash: responseHash,
+          },
         },
-        {
-          $push: {
-            'hourly.$.distribution': {
-              creatorName: creator,
-              percentage: percentBasedSupp,
-              reqHash: requestHash,
-              resHash: responseHash
-            }
-          }
-        },
-        { upsert: true }
-      );
-    }
+      },
+      { upsert: true }
+    );
+
+    console.log(`Updated user percent support for creator ${creator} in sixHours field.`);
   } catch (err) {
-    console.error("Error updating user percent supp:", err);
+    console.error("Error updating user percent support:", err);
   }
 };
 
-
+/**
+ * Update creator-to-creator attention distribution.
+ */
 exports.updateCreatorToCreatorDist = async (creatorsAttentionDist, unixTimestamp) => {
   try {
     const collection = db.collection("attentions");
     await collection.insertOne({
       unixTimestamp,
-      distribution: creatorsAttentionDist
+      distribution: creatorsAttentionDist,
     });
   } catch (err) {
-    console.error("Error updating creator to creator dist:", err);
+    console.error("Error updating creator-to-creator distribution:", err);
   }
 };
 
-const updateCreatorHourlyRecord = async (creatorName, unixTimestamp, latestAttention, reqHash, resHash) => {
+/**
+ * New function: updateCreatorTweetMetrics
+ * For a given creator, store an array of tweet metrics objects
+ * in the "creator_tweet_metrics" collection.
+ */
+exports.updateCreatorTweetMetrics = async (creator, tweetMetrics) => {
   try {
-    console.log(`Updating hourly record for creator: ${creatorName}`);
-    
-    // Find the existing document for this creator
-    const existingRecord = await CreatorHourlyRecord.findOne({ creatorName });
-    
-    if (existingRecord) {
-      // Update existing document by pushing new hourly record
-      const updatedRecord = await CreatorHourlyRecord.findOneAndUpdate(
-        { creatorName },
-        {
-          $push: {
-            hourly: {
-              unixTimestamp,
-              latestAttention,
-              reqHash,
-              resHash
-            }
-          }
-        },
-        { new: true }
-      );
-      console.log(`Updated existing record for ${creatorName}`);
-      return updatedRecord;
-    } else {
-      // Create new document if it doesn't exist
-      const newRecord = await CreatorHourlyRecord.create({
-        creatorName,
-        hourly: [{
-          unixTimestamp,
-          latestAttention,
-          reqHash,
-          resHash
-        }]
-      });
-      console.log(`Created new record for ${creatorName}`);
-      return newRecord;
+    if (!Array.isArray(tweetMetrics) || tweetMetrics.length === 0) {
+      console.log(`No tweet metrics to update for ${creator}. Skipping...`);
+      return;
     }
-  } catch (error) {
-    console.error(`Error updating hourly record for ${creatorName}:`, error);
-    throw error;
+    const collection = db.collection("creator_tweet_metrics");
+    await collection.updateOne(
+      { creatorName: creator },
+      { $push: { tweets: { $each: tweetMetrics } } },
+      { upsert: true }
+    );
+    console.log(`Updated tweet metrics for ${creator}`);
+  } catch (err) {
+    console.error("Error updating tweet metrics:", err);
   }
 };

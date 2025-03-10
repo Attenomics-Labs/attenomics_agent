@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 // Define a sub-schema for each day's data.
 const DaySchema = new Schema({
   latestAttention: { type: Number, required: true },
-  // Using camelCase instead of "unix-timestamp"
+  // Using camelCase for unixTimestamp
   unixTimestamp: { type: Number, required: true },
   reqHash: { type: String, required: true },
   resHash: { type: String, required: true },
@@ -17,7 +17,7 @@ const DaySchema = new Schema({
 });
 
 const AttentionSchema = new Schema({
-  creatorName: { type: String, required: true },
+  creatorName: { type: String, required: true }, // Changed from "username" to "creatorName"
   days: {
     type: Map,
     of: DaySchema
